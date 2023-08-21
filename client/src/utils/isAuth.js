@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 async function isAuth(tokenID){
-    const data = await axios.post('http://localhost:8080/auth/checkToken', {}, {
+    const data = await axios.post(`${process.env.REACT_APP_PUBLIC_URL}/auth/checkToken`, {}, {
         headers: {
             'Authorization': tokenID,
         }

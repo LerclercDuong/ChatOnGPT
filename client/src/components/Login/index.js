@@ -27,7 +27,7 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:8080/auth/login', information);
+      const response = await axios.post(`${process.env.REACT_APP_PUBLIC_URL}/auth/login`, information);
       if (response.data.data) {
         const token = response.data.data.tokenID;
         setAuthenticated(true);

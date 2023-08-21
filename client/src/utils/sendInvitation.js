@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 async function sendInvitation(info) {
-    const data = await axios.post('http://localhost:8080/messenger/sendInvitation', info)
+    const data = await axios.post(`${process.env.REACT_APP_PUBLIC_URL}/messenger/sendInvitation`, info)
     .then(function (response) {
         return response.data;
     })

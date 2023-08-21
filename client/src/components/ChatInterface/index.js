@@ -28,6 +28,7 @@ const customStyles = {
 };
 
 const ChatInterface = ({ socket }) => {
+  console.log(process.env)
   //login states
   const [isLoggedIn, setisLoggedIn] = useState(null);
   const tokenID = localStorage.getItem('tokenID');

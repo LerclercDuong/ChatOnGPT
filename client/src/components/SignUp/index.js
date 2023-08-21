@@ -38,7 +38,7 @@ const SignUp = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:8080/auth/register', information);
+            const response = await axios.post(`${process.env.REACT_APP_PUBLIC_URL}/auth/register`, information);
             setLoginMessage(response.data.message);
         } catch (error) {
             // Handle error if needed

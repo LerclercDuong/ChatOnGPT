@@ -10,7 +10,8 @@ import { useLocation, Navigate } from "react-router-dom";
 import io from "socket.io-client";
 
 function App() {
-  const socket = io("http://localhost:8080");
+  console.log(process.env)
+  const socket = io(`${process.env.REACT_APP_PUBLIC_URL}`);
   return (
     <div className="App">
       <Routes>
