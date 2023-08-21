@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-async function getInvitation(username) {
-    const data = await axios.get(`http://localhost:8080/messenger/getInvitation/${username}`)
+async function getUser(userID) {
+    const data = await axios.get(`http://localhost:8080/messenger/findUserByID/${userID}`)
     .then(function (response) {
         console.log(response)
         return response.data;
@@ -9,4 +9,4 @@ async function getInvitation(username) {
     return data;
 }
 
-export default getInvitation;
+export default getUser;

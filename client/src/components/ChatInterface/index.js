@@ -7,9 +7,12 @@ import Modal from 'react-modal';
 import isAuth from '../../utils/isAuth';
 import socketIOClient from "socket.io-client";
 import getUser from "../../utils/getUser";
+import getUserByID from '../../utils/getUserByID';
 import getConversation from '../../utils/getConversation';
 import getMessages from "../../utils/getMessages";
 import sendInvitation from '../../utils/sendInvitation';
+import getInvitation from '../../utils/getInvitation';
+import createConversation from '../../utils/createConversation';
 
 const customStyles = {
   content: {
@@ -36,6 +39,9 @@ const ChatInterface = ({ socket }) => {
   const [userFoundInfo, setUserFoundInfo] = useState({});
   const [userFound, setUserFound] = useState("");
   const [inviteStatus, setInviteStatus] = useState("");
+  //user notification box (invatations, ...)
+  const [inviteIsOpen, setInviteIsOpen] = useState(false);
+  const [invitationList, setInvitationList] = useState([]);
   //message and conversation states
   const [messageList, setMessageList] = useState([]);
   const [conversationID, setConversationID] = useState("");
@@ -99,6 +105,14 @@ const ChatInterface = ({ socket }) => {
     socket.emit('join', conversationID);
   }
 
+  async function getInvitationList(username) {
+    const invitations = await getInvitation(username);
+    if (invitations) {
+      console.log(invitations)
+      setInvitationList(invitations.data);
+    }
+  }
+
   useEffect(() => {
     async function checkAuth() {
       const userInfo = await isAuth(tokenID);
@@ -109,6 +123,7 @@ const ChatInterface = ({ socket }) => {
         setUsername(userInfo.username)
         getUserInfo(userInfo.username);
         getConversationList(userInfo.username);
+        getInvitationList(userInfo.username);
       }
     }
     checkAuth();
@@ -197,6 +212,20 @@ const ChatInterface = ({ socket }) => {
     }
   }
 
+  async function handleAcceptInvitation(data) {
+    // stopPropagation();
+    const participants = [];
+    participants.push(username);
+    participants.push(data.fromUserName)
+    async function createNewConversation() {
+      const messages = await createConversation({participants});
+      if (messages) {
+        console.log(messages)
+      }
+    }
+    createNewConversation();
+
+  }
   return (
     <div>
       <Modal
@@ -254,27 +283,18 @@ const ChatInterface = ({ socket }) => {
             <div className={styles.user_notification}>
               Invitations
               <ul>
-                <li className={styles.user_invitations_tags}>
-                  <span>
-                    <img src={userFoundInfo.profilePicture}/>
-                    <p>skkkkk</p>
-                  </span>
-                  <button ><ion-icon name="person-add-outline"></ion-icon></button>
-                </li>
-                <li className={styles.user_invitations_tags}>
-                  <span>
-                    <img src={userFoundInfo.profilePicture}/>
-                    <p>skkkkk</p>
-                  </span>
-                  <button ><ion-icon name="person-add-outline"></ion-icon></button>
-                </li>
-                <li className={styles.user_invitations_tags}>
-                  <span>
-                    <img src={userFoundInfo.profilePicture}/>
-                    <p>skkkkk</p>
-                  </span>
-                  <button ><ion-icon name="person-add-outline"></ion-icon></button>
-                </li>
+                {invitationList.map(function(invitation){
+                  return (
+                    <li className={styles.user_invitations_tags}>
+                      <span>
+                        <img src={invitation.fromProfilePicture} />
+                        <p>{invitation.fromUserName}</p>
+                      </span>
+                      <button onClick= {() => handleAcceptInvitation(invitation)}><ion-icon name="person-add-outline"></ion-icon></button>
+                    </li>
+                  )
+
+                })}
               </ul>
             </div>
             <div className={styles.user_info}>

@@ -32,6 +32,27 @@ class Messenger {
 
             })
     }
+
+    async findUserByID(req, res) {
+        const userID = req.params.slug;
+        users.findOne({_id: userID})
+            .then(function (user) {
+                if (user) {
+                    res.status(200).json({
+                        status: 'Found',
+                        data: {
+                            username: user.username,
+                            profilePicture: user.profilePicture,
+                            email: user.email
+                        }
+
+                    })
+                } else {
+                    res.status(200).json({ status: 'Not Found' })
+                }
+
+            })
+    }
     async getConversationByUserName(req, res, next) {
         const username = req.params.username;
         const userID = await users.findOne({ username: username })
@@ -59,6 +80,7 @@ class Messenger {
         await addPicture();
         res.json({ message: 'success', data: messageAll })
     }
+
     async createConversation(req, res) {
         const participants = req.body.participants;
         async function getUserID() {
@@ -70,7 +92,6 @@ class Messenger {
                     userID_list.push(id);
                 }
             }
-
             return userID_list;
         }
         const participants_id = await getUserID();
@@ -124,10 +145,30 @@ class Messenger {
     }
 
     async acceptInvitation(req, res) {
-        
+        const invitationID = req.params.invitationID;
+        invitations.findOneAndDelete({_id: invitationID})
         res.json({message: "success"})
     }
 
+    async getInvitation(req, res) {
+        const username = req.params.username;
+        const usernameID = await users.findOne({ username: username})
+        .then(function (user) {
+            return user._id.toHexString();
+        })
+        const allInvitations = await invitations.find({target: usernameID}).lean();
+        async function addInformation() {
+            for (var invitation of allInvitations) {
+                const user = await users.findOne({ _id: invitation.from});
+                if (user) {
+                    invitation.fromProfilePicture = user.profilePicture;
+                    invitation.fromUserName = user.username;
+                }
+            }
+        }
+        await addInformation();
+        res.json({message: "success", data: allInvitations})
+    }
     deleteMessage(req, res, next) {
 
     }
