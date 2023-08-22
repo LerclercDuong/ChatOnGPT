@@ -27,11 +27,12 @@ app.use(function (req, res, next) {
 
 router(app);
 
-const io =  require("socket.io")(httpServer, {
+const io = require("socket.io")(httpServer, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "*",
     }
-  });
+});
+
 
 socketIO(io);
 
