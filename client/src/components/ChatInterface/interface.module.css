@@ -136,7 +136,11 @@ body {
     color: rgb(130, 130, 130);
     right: 5px;
 }
-
+.prompt_sendButton:hover {
+    color: white;
+    --ionicon-stroke-width: 24px;
+    cursor: pointer;
+}
 .chat_list_navigation {
     display: inline-flex;
     align-items: center;

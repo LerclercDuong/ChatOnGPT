@@ -337,7 +337,7 @@ const ChatInterface = ({ socket }) => {
               onChange={handleSendMessage}
               placeholder="Send a message"
               value={message}></textarea>
-            <div className={styles.prompt_sendButton}><ion-icon name="send-outline"></ion-icon></div>
+            <div className={styles.prompt_sendButton} onClick={sendMessage}><ion-icon name="send-outline"></ion-icon></div>
           </form>
         </div>
       </div>
