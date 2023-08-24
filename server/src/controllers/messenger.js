@@ -5,12 +5,16 @@ const invitations = require('../models/invitations');
 
 class Messenger {
     async saveMessages(message) {
-        const new_messages = new messages({
-            conversation: message.conversation,
-            sender: message.sender,
-            content: message.content
-        })
-        new_messages.save();
+        try {
+            const new_messages = new messages({
+                conversation: message.conversation,
+                sender: message.sender,
+                content: message.content
+            })
+            new_messages.save().catch(function(err){});
+        } catch (err) {
+        }
+
     }
     async findUser(req, res) {
         const username = req.params.slug;
@@ -35,7 +39,7 @@ class Messenger {
 
     async findUserByID(req, res) {
         const userID = req.params.slug;
-        users.findOne({_id: userID})
+        users.findOne({ _id: userID })
             .then(function (user) {
                 if (user) {
                     res.status(200).json({
@@ -139,27 +143,27 @@ class Messenger {
                     return user._id.toHexString();
                 }
             })
-        const new_invitation = new invitations({from: fromID, target: targetID});
+        const new_invitation = new invitations({ from: fromID, target: targetID });
         new_invitation.save();
-        res.json({message: "success"})
+        res.json({ message: "success" })
     }
 
     async acceptInvitation(req, res) {
         const invitationID = req.params.invitationID;
-        invitations.findOneAndDelete({_id: invitationID})
-        res.json({message: "success"})
+        invitations.findOneAndDelete({ _id: invitationID })
+        res.json({ message: "success" })
     }
 
     async getInvitation(req, res) {
         const username = req.params.username;
-        const usernameID = await users.findOne({ username: username})
-        .then(function (user) {
-            return user._id.toHexString();
-        })
-        const allInvitations = await invitations.find({target: usernameID}).lean();
+        const usernameID = await users.findOne({ username: username })
+            .then(function (user) {
+                return user._id.toHexString();
+            })
+        const allInvitations = await invitations.find({ target: usernameID }).lean();
         async function addInformation() {
             for (var invitation of allInvitations) {
-                const user = await users.findOne({ _id: invitation.from});
+                const user = await users.findOne({ _id: invitation.from });
                 if (user) {
                     invitation.fromProfilePicture = user.profilePicture;
                     invitation.fromUserName = user.username;
@@ -167,7 +171,7 @@ class Messenger {
             }
         }
         await addInformation();
-        res.json({message: "success", data: allInvitations})
+        res.json({ message: "success", data: allInvitations })
     }
     deleteMessage(req, res, next) {
 
