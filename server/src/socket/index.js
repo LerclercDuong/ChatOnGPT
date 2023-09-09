@@ -11,6 +11,9 @@ function socketIO(io) {
         socket.on("test", (data) => {
             console.log(data)
         })
+        socket.on("sendInviteToRoom",({data}) => {
+            
+        })
         socket.on("sendMessage", ({messagePacket, conversationID}) => {
             Messenger.saveMessages(messagePacket);
             socket.to(conversationID).emit("toClient", messagePacket)

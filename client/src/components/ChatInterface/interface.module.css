@@ -6,6 +6,11 @@ html {
     box-sizing: border-box;
 }
 
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+
 /* width */
 ::-webkit-scrollbar {
     width: 8px;
@@ -31,14 +36,14 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     overflow: hidden;
-    height: 100%;
+    height: 100vh;
     /* padding: 20px; */
 }
 
 .container {
-    display: flex;
     width: 100%;
-    height: 100%;
+    margin: 0;
+    /* height: 100%; */
     background-color: #0b2b17;
 }
 
@@ -47,7 +52,7 @@ body {
     display: none;
     padding: 10px;
     height: 100vh;
-
+    transition: all 0.5s ease;
 }
 
 .chat_box {
@@ -56,6 +61,99 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+}
+
+.chat_box_bar {
+    gap: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    color: #fff;
+    border-bottom: solid 1px #2d2d2d;
+    background-color: #343541;
+    z-index: 2;
+    right: 0;
+    top: 0;
+    text-align: center;
+    transition: left 1s linear;
+    padding: 0 20px;
+}
+
+.chat_box_bar ion-icon {
+    font-size: 20px;
+}
+
+.chat_box_bar ion-icon:hover {
+    cursor: pointer;
+}
+
+.chat_box_bar .add_member {
+    position: relative;
+}
+
+.chat_box_bar .add_member_box {
+    position:absolute;
+    width: 260px;
+    right: 0;
+    padding: 5px;
+    border-radius: 2px;
+    background-color: transparent;
+}
+
+.add_member_box form {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+    height: 40px;
+}
+
+.add_member_box form input {
+    height: 100%;
+}
+
+.add_member_box button {
+    width: 46px;
+    height: 40px;
+}
+
+.add_member_box .user_adding_tags {
+    width: 100%;
+    height: 40px;
+    margin-top: 5px;
+    gap: 2px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.add_member_box .user_adding_tags img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.add_member_box .user_adding_tags span {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    gap: 5px;
+    padding-left: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #202123;
+}
+
+.add_member_box .user_adding_tags button {
+    background-color: #202123;
+}
+
+
+
+.fly {
+    top: -50px;
 }
 
 .chat_content {
@@ -80,6 +178,10 @@ body {
     overflow: hidden;
 }
 
+.border_message {
+    border-top: solid 1px #393939;
+}
+
 .messages_wrapper {
     position: relative;
     color: #fff;
@@ -93,6 +195,8 @@ body {
 .messages_content {
     text-align: left;
     word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap;
     width: 100%;
 }
 
@@ -130,17 +234,32 @@ body {
     padding: 10px;
 }
 
+.prompt_sendImage {
+    position: absolute;
+    font-size: 22px;
+    color: rgb(130, 130, 130);
+    right: 40px;
+}
+
 .prompt_sendButton {
     position: absolute;
     font-size: 20px;
     color: rgb(130, 130, 130);
     right: 5px;
 }
+
 .prompt_sendButton:hover {
     color: white;
     --ionicon-stroke-width: 24px;
     cursor: pointer;
 }
+
+.prompt_sendImage:hover {
+    color: white;
+    --ionicon-stroke-width: 24px;
+    cursor: pointer;
+}
+
 .chat_list_navigation {
     display: inline-flex;
     align-items: center;
@@ -176,9 +295,28 @@ body {
     background-color: #202123;
 }
 
+.chat_list .menu_chat {
+    height: 90%;
+}
+
 .chat_list_conversationList {
+    height: 80%;
+    overflow-y: scroll;
     margin-top: 10px;
     width: 100%;
+}
+
+.chat_list_conversationList::-webkit-scrollbar-thumb {
+    background-color: rgb(166, 166, 166);
+    border-radius: 5px;
+}
+
+.chat_list_conversationList::-webkit-scrollbar-track {
+    background: none;
+}
+
+.chat_list_conversationList::-webkit-scrollbar {
+    width: 7px;
 }
 
 .chat_list_conversationList ul {
@@ -278,8 +416,11 @@ body {
     text-align: center;
 }
 
-.user_navigation {
+.createNewRoomForm input {
+    margin: 10px 0;
+}
 
+.user_navigation {
     position: relative;
     /* left: 10px; */
     width: 100%;
@@ -311,15 +452,18 @@ body {
     width: 32px;
     height: 32px;
 }
-.user_navigation ion-icon{
+
+.user_navigation ion-icon {
     font-size: 22px;
     color: #7f7f7f;
 }
-.user_navigation:hover .user_notification {
+
+/* .user_navigation:hover .user_notification {
     display: block;
-}
-.user_notification{
-    display: none;
+} */
+
+.user_notification {
+    /* display: none; */
     position: absolute;
     top: -5px;
     transform: translateY(-100%);
@@ -331,21 +475,24 @@ body {
     padding: 10px;
     border-radius: 5px;
 }
-.user_notification ul{
+
+.user_notification ul {
     width: 100%;
     height: 100px;
     padding: 5px;
     list-style-type: none;
     overflow-y: scroll;
 }
-.user_notification .user_invitations_tags span{
+
+.user_notification .user_invitations_tags span {
     width: 80%;
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
 }
-.user_notification .user_invitations_tags{
+
+.user_notification .user_invitations_tags {
     display: inline-flex;
     align-items: center;
     height: 30px;
@@ -353,26 +500,35 @@ body {
     justify-content: space-between;
     margin-bottom: 5px;
 }
-.user_notification .user_invitations_tags img{
+
+.user_notification .user_invitations_tags img {
     height: 24px;
     width: 24px;
 }
-.user_notification .user_invitations_tags button{
+
+.user_notification .user_invitations_tags button {
     width: 16%;
     color: white;
 }
-.user_notification .user_invitations_tags button ion-icon{
+
+.user_notification .user_invitations_tags button ion-icon {
     color: white;
     font-size: 14px;
 }
+
+.navigation_openChatListButton {
+    display: none;
+}
+
+.open {
+    position: absolute;
+    display: block;
+    width: 100%;
+    z-index: 3;
+}
+
+
 @media (min-width: 1280px) {
-    .chat_list {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 25%;
-    }
 
     /* .chat_box{
         width: 50%;
@@ -382,29 +538,65 @@ body {
     }
 }
 
-@media (min-width: 1024px) and (max-width: 1280px) {
-    .chat_list {
-        position: relative;
-        display: block;
-        width: 30%;
-    }
+@media (min-width: 1024px) and (max-width: 1279px) {
 
     .chat_box_prompt {
         width: 50%;
     }
 
-    .messages_content {}
 }
 
 @media (min-width: 768px) and (max-width:1023px) {
-    .chat_list {
-        display: block;
-        width: 40%;
-    }
 
     .chat_box_prompt {
-        width: 60%;
+        width: 55%;
     }
 
-    .messages_content {}
+
+
+}
+
+@media (max-width: 768px) {
+    .navigation_openChatListButton {
+        display: block;
+        width: 50px;
+        height: 50px;
+        background-color: #29292d;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 3;
+    }
+
+    .navigation_openChatListButton ion-icon {
+        color: #888888;
+        font-size: 28px;
+    }
+
+    .open {
+        position: absolute;
+        display: block;
+        width: 55%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .chat_list {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 320px;
+    }
+
+    .container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
 }

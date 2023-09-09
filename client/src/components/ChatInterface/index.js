@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import clsx from "clsx";
 import React from 'react';
 import styles from './interface.module.css';
+import useScrollDirection from '../../hooks/useScrollDirection.js';
 import { Navigate } from "react-router-dom";
 import Modal from 'react-modal';
 import isAuth from '../../utils/isAuth';
@@ -13,22 +14,10 @@ import getMessages from "../../utils/getMessages";
 import sendInvitation from '../../utils/sendInvitation';
 import getInvitation from '../../utils/getInvitation';
 import createConversation from '../../utils/createConversation';
-
-const customStyles = {
-  content: {
-    top: '30%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    background: '#444654',
-    color: '#FFFFFF'
-  },
-};
+import CreateRoomModal from '../../modals/CreateRoomModal';
+import joinRoom from '../../utils/joinRoom';
 
 const ChatInterface = ({ socket }) => {
-  console.log(process.env)
   //login states
   const [isLoggedIn, setisLoggedIn] = useState(null);
   const tokenID = localStorage.getItem('tokenID');
@@ -37,25 +26,52 @@ const ChatInterface = ({ socket }) => {
   const [userInfo, setUserInfo] = useState({});
   //find target user to create conversation states
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [roomName, setRoomName] = useState('');
+  const [userFoundName, setUserFoundName] = useState("");
   const [userFoundInfo, setUserFoundInfo] = useState({});
   const [userFound, setUserFound] = useState("");
   const [inviteStatus, setInviteStatus] = useState("");
+  const [chatListOpen, setChatListOpen] = useState(false);
   //user notification box (invatations, ...)
-  const [inviteIsOpen, setInviteIsOpen] = useState(false);
+  const [inviteBoxIsOpen, setInviteBoxIsOpen] = useState(false);
+  const [userBoxIsOpen, setUserBoxIsOpen] = useState(false);
   const [invitationList, setInvitationList] = useState([]);
   //message and conversation states
+  const [addMemberBox, setAddMemberBox] = useState(false);
   const [messageList, setMessageList] = useState([]);
   const [conversationID, setConversationID] = useState("");
+  const [currentRoomInfo, setCurrentRoomInfo] = useState({});
   const [conversationList, setConversationList] = useState([]);
   //scroll ref
   const messagesEndRef = useRef(null)
-
+  const chatBoxRef = useRef(null);
+  const chatBoxScroll = useScrollDirection(chatBoxRef);
   const [message, setMessage] = useState("");
-
   let subtitle;
+
+  const [scrollDirection, setScrollDirection] = useState(null);
+
+  useEffect(() => {
+    let lastScrollY = chatBoxRef.current.scrollTop;
+    const updateScrollDirection = () => {
+      const scrollY = chatBoxRef.current.scrollTop;
+      const direction = scrollY > lastScrollY ? "down" : "up";
+      if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
+        setScrollDirection(direction);
+      }
+      lastScrollY = scrollY > 0 ? scrollY : 0;
+    };
+    chatBoxRef.current.addEventListener("scroll", updateScrollDirection); // add event listener
+    return () => {
+      chatBoxRef.current.removeEventListener("scroll", updateScrollDirection); // clean up
+    }
+  });
+
+
 
   function openModal() {
     setIsOpen(true);
+    setChatListOpen(false)
   }
 
   function afterOpenModal() {
@@ -69,12 +85,14 @@ const ChatInterface = ({ socket }) => {
   }
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
   useEffect(() => {
     scrollToBottom()
   });
+
+
   // Run the effect only once on component mount
   isAuth(tokenID)
   useEffect(() => {
@@ -101,6 +119,7 @@ const ChatInterface = ({ socket }) => {
       setConversationList(conversations.data);
       if (conversations.data[0]) {
         setConversationID(conversations.data[0]._id);
+        setCurrentRoomInfo(conversations.data[0])
       }
     }
     socket.emit('join', conversationID);
@@ -129,6 +148,7 @@ const ChatInterface = ({ socket }) => {
     }
     checkAuth();
   }, [])
+
   useEffect(() => {
     socket.emit('join', conversationID);
     async function getAllMessages() {
@@ -153,20 +173,13 @@ const ChatInterface = ({ socket }) => {
     setMessage(e.target.value)
   }
 
-  async function handleFindUser(e) {
-    e.preventDefault();
-    const userInfo = await getUser(userFound);
+  async function handleFindUser() {
+    const userInfo = await getUser(userFoundName);
     if (userInfo.data) {
       setUserFoundInfo(userInfo.data);
     }
   }
 
-  function handleFindUserName(e) {
-    setUserFound(e.target.value)
-  }
-  // useEffect(()=>{
-
-  // })
   function handleTime() {
     var date = new Date();
     var clock;
@@ -179,7 +192,6 @@ const ChatInterface = ({ socket }) => {
   }
 
   function sendMessage() {
-    const currentTime = handleTime();
     if (message) {
       const messagePacket = {
         sender: username,
@@ -199,70 +211,82 @@ const ChatInterface = ({ socket }) => {
   }
 
   function handleConversation(e) {
+    setScrollDirection(null)
     setConversationID(e._id);
+    setCurrentRoomInfo(e)
   }
 
   async function handleSendInvitation(target) {
     const data = {
+      roomID: conversationID,
       from: username,
       to: target
     }
     const status = await sendInvitation(data);
     if (status.message) {
+      console.log(status.message)
       setInviteStatus(status.message)
+    }
+  }
+  function handleRoomName(e) {
+    setRoomName(e.target.value);
+  }
+  async function createNewRoom(data) {
+    try {
+      // Assuming 'username' is defined somewhere
+      const participants = [username];
+      const messages = await createConversation({ roomName, participants });
+      if (messages) {
+        console.log(messages);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   }
 
   async function handleAcceptInvitation(data) {
-    // stopPropagation();
-    const participants = [];
-    participants.push(username);
-    participants.push(data.fromUserName)
-    async function createNewConversation() {
-      const messages = await createConversation({participants});
-      if (messages) {
-        console.log(messages)
-      }
-    }
-    createNewConversation();
+    try {
+      const roomID = data.roomID;
+      const targetID = data.target;
+      // Assuming 'username' is defined somewhere
 
+      const messages = await joinRoom({ roomID, targetID });
+
+      if (messages) {
+        console.log(messages);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
   }
+
   return (
     <div>
-      <Modal
-        className={styles.createConversationModal}
-        isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
-        <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Create conversation</h2>
-        {/* <button onClick={closeModal}>close</button> */}
-        <form onSubmit={handleFindUser}>
-          <input type="text" placeholder="Enter name" onChange={handleFindUserName}></input>
-          <div className={styles.user_found}>
-            <ul>
-              {userFoundInfo.username &&
-                <li>
-                  <span>
-                    <img src={userFoundInfo.profilePicture}></img>
-                    <p>{userFoundInfo.username}</p>
-                  </span>
-                  <button onClick={() => handleSendInvitation(userFoundInfo.username)}><ion-icon name="person-add-outline"></ion-icon></button>
-                </li>
-              }
-            </ul>
-            <button className={styles.createConversationButton}>Creating confirm</button>
-          </div>
-        </form>
-      </Modal>
+      <button className={styles.navigation_openChatListButton}
+        onClick={() => {
+          setChatListOpen(true);
+        }}
+      ><ion-icon name="log-out-outline"></ion-icon>
+      </button>
+      <CreateRoomModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        handleRoomName={handleRoomName}
+        createNewRoom={createNewRoom}
+      />
+
       <div className={styles.container}>
-        <div className={styles.chat_list}>
-          <div>
+        <div className={clsx(styles.chat_list, { [styles.open]: chatListOpen === true })}>
+          <div className={styles.menu_chat}>
             <div className={styles.chat_list_navigation}>
               <button className={styles.navigation_createNewChat} onClick={openModal}>Create new chat</button>
-              <button className={styles.navigation_closeChat}><ion-icon name="log-out-outline"></ion-icon></button>
+              <button className={styles.navigation_closeChat}
+                onClick={() => {
+                  setChatListOpen(false);
+                }}
+              >
+                <ion-icon name="log-out-outline"></ion-icon>
+              </button>
             </div>
             <div className={styles.chat_list_conversationList}>
               <ul>
@@ -273,25 +297,29 @@ const ChatInterface = ({ socket }) => {
                     <li onClick={() => handleConversation(conversation)}
                       className={clsx(styles.conversationList_conversations, { [styles.current_conversation]: conversation._id === conversationID })}>
                       <ion-icon name="chatbox-outline"></ion-icon>
-                      {opponent}</li>
+                      {conversation.name}</li>
                   )
                 })}
               </ul>
             </div>
           </div>
 
-          <div className={styles.user_navigation}>
-            <div className={styles.user_notification}>
+          <div className={styles.user_navigation}
+            onClick={()=>{
+              setInviteBoxIsOpen(!inviteBoxIsOpen);
+            }}
+          >
+            <div className={clsx(styles.user_notification, {[styles.hide]: inviteBoxIsOpen === false})}>
               Invitations
               <ul>
-                {invitationList.map(function(invitation){
+                {invitationList.map(function (invitation) {
                   return (
                     <li className={styles.user_invitations_tags}>
                       <span>
                         <img src={invitation.fromProfilePicture} />
                         <p>{invitation.fromUserName}</p>
                       </span>
-                      <button onClick= {() => handleAcceptInvitation(invitation)}><ion-icon name="person-add-outline"></ion-icon></button>
+                      <button onClick={() => handleAcceptInvitation(invitation)}><ion-icon name="person-add-outline"></ion-icon></button>
                     </li>
                   )
 
@@ -305,9 +333,53 @@ const ChatInterface = ({ socket }) => {
             <ion-icon name="settings-outline"></ion-icon>
           </div>
         </div>
-        <div className={styles.chat_box}>
-          <div className={styles.chat_content}>
+        <div className={styles.chat_box} >
+          <div className={clsx(styles.chat_box_bar, { [styles.fly]: scrollDirection === "up" })}>
+            <div></div>
+            <p>{currentRoomInfo.name}</p>
+            <div className={styles.add_member}>
+              {/* cross button  */}
+              <ion-icon name="add-outline"
+                onClick={() => {
+                  setUserBoxIsOpen(!userBoxIsOpen);
+                }}
+              ></ion-icon>
+              <div className={clsx(styles.add_member_box, { [styles.hide]: userBoxIsOpen === false || scrollDirection === "up" })}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleFindUser();
+                }
+                }>
+                  <input type="text" placeholder="Enter member name" required
+                    onChange={(e) => {
+                      setUserFoundName(e.target.value)
+                    }}
+                  ></input>
+                  <button><ion-icon name="search-outline"></ion-icon></button>
+                </form>
+                {userFoundInfo.username && (
+                  <ul>
+                    <li className={styles.user_adding_tags}>
+                      <span>
+                        <img src={userFoundInfo.profilePicture} alt="User Avatar" />
+                        <p>{userFoundInfo.username}</p>
+                      </span>
+                      <button
+                        onClick={()=>{handleSendInvitation(userFoundInfo.username)}}
+                      ><ion-icon name="person-add-outline"></ion-icon></button>
+                    </li>
+                  </ul>
+                )}
+
+              </div>
+            </div>
+
+          </div>
+          <div className={styles.chat_content}
+            ref={chatBoxRef}
+          >
             <ul>
+              <p>{currentRoomInfo.name} was created</p>
               {messageList.map(function (message, index) {
                 return (
                   <li className={clsx(styles.chat_content_messages, { [styles.opponent]: message.sender === username })}>
@@ -337,6 +409,8 @@ const ChatInterface = ({ socket }) => {
               onChange={handleSendMessage}
               placeholder="Send a message"
               value={message}></textarea>
+
+            <div className={styles.prompt_sendImage}><ion-icon name="image-outline"></ion-icon></div>
             <div className={styles.prompt_sendButton} onClick={sendMessage}><ion-icon name="send-outline"></ion-icon></div>
           </form>
         </div>

@@ -99,6 +99,8 @@ const SignUp = () => {
                 <p className="login_message">{loginMessage}</p>
                 <button type="submit">Register</button>
             </form>
+            <p>Already have account <a href="/login" 
+      >Login</a></p>
         </div>
     );
 

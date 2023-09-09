@@ -4,6 +4,7 @@ const messages = require('../models/messages');
 const invitations = require('../models/invitations');
 
 class Messenger {
+
     async saveMessages(message) {
         try {
             const new_messages = new messages({
@@ -11,7 +12,7 @@ class Messenger {
                 sender: message.sender,
                 content: message.content
             })
-            new_messages.save().catch(function(err){});
+            new_messages.save().catch(function (err) { });
         } catch (err) {
         }
 
@@ -86,6 +87,8 @@ class Messenger {
     }
 
     async createConversation(req, res) {
+        // const name = req.body.name;
+        const roomName = req.body.roomName;
         const participants = req.body.participants;
         async function getUserID() {
             const userID_list = [];
@@ -99,10 +102,11 @@ class Messenger {
             return userID_list;
         }
         const participants_id = await getUserID();
-        const new_conversation = new conversation({ name: participants.join(), participants: participants_id })
-        new_conversation.save();
+        const new_conversation = new conversation({ name: roomName, participants: participants_id })
+        new_conversation.save().catch(function () { });
         res.json({ message: 'success' })
     }
+
 
 
     async sendMessage(req, res, next) {
@@ -131,6 +135,7 @@ class Messenger {
     async sendInvitation(req, res) {
         const fromName = req.body.from;
         const targetName = req.body.to;
+        const roomID = req.body.roomID;
         const fromID = await users.findOne({ username: fromName })
             .then(function (user) {
                 if (user) {
@@ -143,15 +148,36 @@ class Messenger {
                     return user._id.toHexString();
                 }
             })
-        const new_invitation = new invitations({ from: fromID, target: targetID });
-        new_invitation.save();
-        res.json({ message: "success" })
+        const isExist = await invitations.findOne({ from: fromID, target: targetID, roomID: roomID })
+        if (isExist) {
+            res.json({ message: "invitations already exist" })
+        } else {
+            const new_invitation = new invitations({ from: fromID, target: targetID, roomID: roomID });
+            new_invitation.save();
+            res.json({ message: "success" })
+        }
+
     }
 
-    async acceptInvitation(req, res) {
-        const invitationID = req.params.invitationID;
-        invitations.findOneAndDelete({ _id: invitationID })
-        res.json({ message: "success" })
+    async joinRoom(req, res) {
+        const roomID = req.body.roomID;
+        const targetID = req.body.targetID;
+        const invitationData = await invitations.findOne({ roomID: roomID, target: targetID }).then(invitation => {
+            return invitation
+        })
+        console.log(invitationData._id.toHexString())
+        if (invitationData) {
+            const result = await conversation.updateOne(
+                { _id: roomID },
+                { $push: { participants: targetID } },
+            );
+            if (result) {
+                await invitations.findByIdAndDelete(invitationData._id)             
+            } else {
+                console.log('No participant added. Conversation not found or user already exists.');        
+            }
+        }
+        res.json({ message: "Success" })
     }
 
     async getInvitation(req, res) {

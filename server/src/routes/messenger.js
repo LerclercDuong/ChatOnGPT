@@ -3,6 +3,7 @@ const router = express.Router();
 const Messenger = require('../controllers/messenger');
 
 router.post('/createConversation', Messenger.createConversation);
+router.post('/joinRoom', Messenger.joinRoom);
 router.post('/send', Messenger.sendMessage);
 router.get('/findUser/:slug', Messenger.findUser);
 router.get('/findUserByID/:slug', Messenger.findUserByID);
