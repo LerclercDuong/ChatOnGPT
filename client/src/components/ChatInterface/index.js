@@ -262,12 +262,7 @@ const ChatInterface = ({ socket }) => {
 
   return (
     <div>
-      <button className={styles.navigation_openChatListButton}
-        onClick={() => {
-          setChatListOpen(true);
-        }}
-      ><ion-icon name="log-out-outline"></ion-icon>
-      </button>
+
       <CreateRoomModal
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
@@ -305,11 +300,11 @@ const ChatInterface = ({ socket }) => {
           </div>
 
           <div className={styles.user_navigation}
-            onClick={()=>{
+            onClick={() => {
               setInviteBoxIsOpen(!inviteBoxIsOpen);
             }}
           >
-            <div className={clsx(styles.user_notification, {[styles.hide]: inviteBoxIsOpen === false})}>
+            <div className={clsx(styles.user_notification, { [styles.hide]: inviteBoxIsOpen === false })}>
               Invitations
               <ul>
                 {invitationList.map(function (invitation) {
@@ -335,7 +330,13 @@ const ChatInterface = ({ socket }) => {
         </div>
         <div className={styles.chat_box} >
           <div className={clsx(styles.chat_box_bar, { [styles.fly]: scrollDirection === "up" })}>
-            <div></div>
+            <div className={styles.bar_padding}></div>
+            <button className={styles.navigation_openChatListButton}
+              onClick={() => {
+                setChatListOpen(true);
+              }}
+            ><ion-icon name="log-out-outline"></ion-icon>
+            </button>
             <p>{currentRoomInfo.name}</p>
             <div className={styles.add_member}>
               {/* cross button  */}
@@ -365,7 +366,7 @@ const ChatInterface = ({ socket }) => {
                         <p>{userFoundInfo.username}</p>
                       </span>
                       <button
-                        onClick={()=>{handleSendInvitation(userFoundInfo.username)}}
+                        onClick={() => { handleSendInvitation(userFoundInfo.username) }}
                       ><ion-icon name="person-add-outline"></ion-icon></button>
                     </li>
                   </ul>
@@ -392,9 +393,9 @@ const ChatInterface = ({ socket }) => {
                   </li>
                 )
               })}
-
+              <div ref={messagesEndRef} />
             </ul>
-            <div ref={messagesEndRef} />
+
           </div>
           <form className={styles.chat_box_prompt} >
             <textarea className={styles.prompt_textArea} wrap="soft"
