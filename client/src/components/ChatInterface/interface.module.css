@@ -1,6 +1,6 @@
 html {
     /* font-size:12px; */
-    height: 100vh;
+    height: 100dvh; /* new browsers */
 }
 
 * {
@@ -215,6 +215,7 @@ body {
 }
 
 .chat_box_prompt {
+    /* height: 100%; */
     display: inline-flex;
     position: fixed;
     width: 80%;
