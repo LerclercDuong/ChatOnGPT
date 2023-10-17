@@ -11,14 +11,13 @@ import {useLocation, useNavigate, Navigate} from "react-router-dom";
 import io from "socket.io-client";
 import isAuth from '../src/utils/isAuth';
 
-const socket = io('https://gptchathost.online/');
+const socket = io('https://www.gptchathost.online/');
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // Add loading state
     const [userOnline, setUserOnline] = useState(null);
     socket.on("pingOnlineState", (data) => {
-        console.log(data)
         setUserOnline(data);
     })
 

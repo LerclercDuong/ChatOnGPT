@@ -104,7 +104,6 @@ const ChatInterface = ({socket, onlineState}) => {
         };
         reader.readAsDataURL(imageFile);
     };
-    console.log(imageDataURL)
     let subtitle;
 
     const [scrollDirection, setScrollDirection] = useState(null);
@@ -127,7 +126,7 @@ const ChatInterface = ({socket, onlineState}) => {
 
 
     useEffect(() => {
-        console.log(onlineState)
+        // console.log(onlineState)
     }, onlineState)
 
 
@@ -274,7 +273,7 @@ const ChatInterface = ({socket, onlineState}) => {
 
     useEffect(() => {
         socket.on('pingIsTyping', (data) => {
-            console.log(data)
+            // console.log(data)
             setTypingUser(data);
         })
         return () => {
@@ -363,7 +362,7 @@ const ChatInterface = ({socket, onlineState}) => {
 
     useEffect(() => {
         socket.on("pingJoinRoom", async (data) => {
-            console.log(data)
+            // console.log(data)
             const {roomId} = data;
 
             async function update() {
