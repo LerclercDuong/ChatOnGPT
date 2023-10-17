@@ -32,6 +32,10 @@ ul {
     background: #555;
 }
 
+:root {
+    --green: #00A67E;
+}
+
 html,
 body {
     font-family: Arial, sans-serif;
@@ -96,7 +100,7 @@ body {
 }
 
 .chat_box_bar .add_member_box {
-    position:absolute;
+    position: absolute;
     width: 260px;
     right: 0;
     padding: 5px;
@@ -130,11 +134,13 @@ body {
     align-items: center;
     justify-content: space-between;
 }
+
 .add_member_box .user_adding_tags img {
     width: 30px;
     height: 30px;
     border-radius: 50%;
 }
+
 .add_member_box .user_adding_tags span {
     width: 100%;
     height: 100%;
@@ -152,14 +158,18 @@ body {
 }
 
 
-
 .fly {
     top: -50px;
 }
 
 .chat_content {
+    transition: ease-in-out .2s;
     height: 80%;
     overflow-y: scroll;
+}
+
+.expand {
+    height: 70% !important;
 }
 
 .chat_content ul {
@@ -200,7 +210,18 @@ body {
     white-space: pre-wrap;
     width: 100%;
 }
-
+.message_image_wrapper{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+}
+.message_image{
+    border-radius: 10px;
+    width: 40%;
+    height: auto;
+}
 .message_time {
     display: inline-block;
     color: #8d8d8d;
@@ -208,6 +229,7 @@ body {
 }
 
 .chat_avatar {
+    border: solid 1px black;
     height: 40px;
     width: 40px;
     position: absolute;
@@ -217,6 +239,7 @@ body {
 .chat_box_prompt {
     /* height: 100%; */
     display: inline-flex;
+    flex-wrap: wrap;
     position: fixed;
     width: 80%;
     align-items: center;
@@ -224,6 +247,39 @@ body {
     margin-top: auto;
     margin-bottom: 30px;
     bottom: 0;
+}
+
+.image_preview {
+    /*flex-shrink:1;*/
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    padding: 5px;
+    height: 100px;
+    border-radius: 10px 10px 0 0;
+    /*background-color: #0b2b17;*/
+}
+
+.images {
+    /*width: 60px;*/
+    border-radius: 10px;
+    height: 90%;
+}
+
+.delete_image {
+    background-color: #40414f;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.delete_image ion-icon {
+    color: antiquewhite;
+    font-size: 28px;
 }
 
 .prompt_textArea {
@@ -241,6 +297,7 @@ body {
     font-size: 22px;
     color: rgb(130, 130, 130);
     right: 40px;
+    bottom: 14px;
 }
 
 .prompt_sendButton {
@@ -248,6 +305,7 @@ body {
     font-size: 20px;
     color: rgb(130, 130, 130);
     right: 5px;
+    bottom: 14px;
 }
 
 .prompt_sendButton:hover {
@@ -529,6 +587,13 @@ body {
     z-index: 3;
 }
 
+.isTypingStatus {
+    color: white;
+}
+
+.createRoomStatus {
+    color: var(--green);
+}
 
 @media (min-width: 1280px) {
 
@@ -548,12 +613,11 @@ body {
 
 }
 
-@media (min-width: 768px) and (max-width:1023px) {
+@media (min-width: 768px) and (max-width: 1023px) {
 
     .chat_box_prompt {
         width: 55%;
     }
-
 
 
 }
@@ -562,6 +626,7 @@ body {
     .bar_padding {
         display: none;
     }
+
     .navigation_openChatListButton {
         display: block;
         width: 30px;
@@ -610,6 +675,7 @@ body {
     .chat_list_navigation {
         height: 60px;
     }
+
     .open {
         position: absolute;
         display: block;
@@ -619,5 +685,5 @@ body {
         justify-content: space-between;
         padding: 20px;
     }
-    
+
 }

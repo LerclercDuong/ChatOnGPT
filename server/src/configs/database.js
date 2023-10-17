@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 function connect(){
         mongoose.connect(process.env.MONGO_DB)
         .then(function(){

@@ -9,17 +9,17 @@ const register = (username, email, password) => {
     });
 };
 
-const login = (username, password) => {
-    return axios
+const login = async (username, password) => {
+    return await axios
         .post(API_URL + "/auth/login", {
             username,
             password,
         })
         .then((response) => {
             if (response.data) {
-                console.log(response.data)
-                localStorage.setItem("user", JSON.stringify(response.data.data));
-                localStorage.setItem("tokenID", response.data.data.tokenID);
+                // console.log(response.data)
+                localStorage.setItem("userData", JSON.stringify(response.data.data));
+                localStorage.setItem("tokenId", response.data.data.tokenID);
             }
 
             return response.data;
@@ -27,7 +27,7 @@ const login = (username, password) => {
 };
 
 const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("userData");
 };
 
 export default {
