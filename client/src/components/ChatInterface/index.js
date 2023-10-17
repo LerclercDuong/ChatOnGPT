@@ -290,7 +290,6 @@ const ChatInterface = ({socket, onlineState}) => {
     }
 
 
-
     function sendMessage() {
         if (message) {
             const messagePacket = {
@@ -331,6 +330,7 @@ const ChatInterface = ({socket, onlineState}) => {
             async function update() {
                 await getInviteList(data.target);
             }
+
             await update();
         })
         return () => {
@@ -423,11 +423,11 @@ const ChatInterface = ({socket, onlineState}) => {
                         <div className={clsx(styles.user_notification, {[styles.hide]: inviteBoxIsOpen === false})}>
                             Invitations
                             <ul>
-                                {inviteList.length > 0 &&  inviteList.map(function (invite) {
+                                {inviteList.length > 0 && inviteList.map(function (invite) {
                                     return (
-                                        <li >
+                                        <li>
                                             <form className={styles.user_invitations_tags}
-                                                onSubmit={() => handleAcceptInvitation(invite)}>
+                                                  onSubmit={() => handleAcceptInvitation(invite)}>
                                              <span>
                         <img src={invite.fromProfilePicture}/>
                         <p>{invite.from.username}</p>

@@ -66,7 +66,7 @@ const SignUp = () => {
                         required
                     />
                 </div>
-                <div>
+                <div>21
                     <label htmlFor="password">Password:</label>
                     <input
                         type="password"

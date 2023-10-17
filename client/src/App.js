@@ -11,7 +11,7 @@ import {useLocation, useNavigate, Navigate} from "react-router-dom";
 import io from "socket.io-client";
 import isAuth from '../src/utils/isAuth';
 
-const socket = io('http://localhost:8080/');
+const socket = io('https://gptchathost.online/');
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
