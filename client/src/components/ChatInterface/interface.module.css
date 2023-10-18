@@ -210,18 +210,21 @@ body {
     white-space: pre-wrap;
     width: 100%;
 }
-.message_image_wrapper{
+
+.message_image_wrapper {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 10px;
 }
-.message_image{
+
+.message_image {
     border-radius: 10px;
     width: 40%;
-    height: auto;
+    /*height: auto;*/
 }
+
 .message_time {
     display: inline-block;
     color: #8d8d8d;
@@ -277,6 +280,7 @@ body {
     top: 5px;
     right: 5px;
 }
+
 .delete_image ion-icon {
     color: antiquewhite;
     font-size: 28px;
@@ -291,21 +295,46 @@ body {
     height: 60px;
     padding: 10px;
 }
-
-.prompt_sendImage {
+.prompt_feature_area {
     position: absolute;
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    right: 10px;
+    gap: 10px;
+    bottom: 14px;
+    /*height: fit-content;*/
+}
+.prompt_emoji {
+    position: relative;
+    /*height: fit-content;*/
     font-size: 22px;
     color: rgb(130, 130, 130);
-    right: 40px;
-    bottom: 14px;
+    padding-bottom: 30px;
+}
+.prompt_emoji ion-icon{
+    bottom: 4px;
+    position: absolute;
+    right: 0;
+    z-index: 3;
+}
+/* Apply different align-items value for the emojiPicker */
+.emojiPicker {
+    position: absolute;
+    z-index: 1;
+    bottom: 10px;
 }
 
+
+
+
 .prompt_sendButton {
-    position: absolute;
+    /*position: absolute;*/
     font-size: 20px;
     color: rgb(130, 130, 130);
-    right: 5px;
-    bottom: 14px;
+    align-items: baseline;
+    /*right: 5px;*/
+    /*bottom: 14px;*/
 }
 
 .prompt_sendButton:hover {
@@ -314,7 +343,7 @@ body {
     cursor: pointer;
 }
 
-.prompt_sendImage:hover {
+.prompt_emoji:hover {
     color: white;
     --ionicon-stroke-width: 24px;
     cursor: pointer;
@@ -626,7 +655,11 @@ body {
     .bar_padding {
         display: none;
     }
-
+    .message_image {
+        border-radius: 10px;
+        width: 70%;
+        /*height: auto;*/
+    }
     .navigation_openChatListButton {
         display: block;
         width: 30px;
@@ -684,6 +717,11 @@ body {
         flex-direction: column;
         justify-content: space-between;
         padding: 20px;
+    }
+    .message_image {
+        border-radius: 10px;
+        width: 80%;
+        /*height: auto;*/
     }
 
 }

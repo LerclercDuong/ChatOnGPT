@@ -7,6 +7,7 @@ import isAuth from '../../utils/isAuth';
 import CreateRoomModal from '../../modals/CreateRoomModal';
 import callAPI from "../../utils/callAPI";
 import timeFormat from "../../utils/timeFormat";
+import EmojiPicker from 'emoji-picker-react';
 
 const {createNewRoom, getRoom, getMessages, findUser, getInvite} = callAPI;
 
@@ -45,6 +46,7 @@ const ChatInterface = ({socket, onlineState}) => {
     const chatBoxScroll = useScrollDirection(chatBoxRef);
     const [message, setMessage] = useState("");
     const [imageDataURL, setImageDataURL] = useState([]);
+    const [emojiPicker, setEmojiPicker] = useState(false);
     const onPaste = (event) => {
         event.preventDefault();
         let imageAdded = false; // Flag to track if an image has been added
@@ -290,7 +292,7 @@ const ChatInterface = ({socket, onlineState}) => {
 
 
     function sendMessage() {
-        if (message) {
+        if (message || imageDataURL) {
             const messagePacket = {
                 sender: userInfo.username,
                 senderData: userInfo._id,
@@ -604,13 +606,21 @@ const ChatInterface = ({socket, onlineState}) => {
                                   value={message}>
 
                         </textarea>
+                        <div className={styles.prompt_feature_area}>
 
-                        <div className={styles.prompt_sendImage}>
-                            <ion-icon name="image-outline"></ion-icon>
+                            <div className={styles.prompt_emoji}>
+                                {emojiPicker && <EmojiPicker className={styles.emojiPicker}/>}
+                                <ion-icon name="happy-outline"
+                                          onClick={() => {
+                                              setEmojiPicker(!emojiPicker);
+                                          }}
+                                ></ion-icon>
+                            </div>
+                            <div className={styles.prompt_sendButton} onClick={sendMessage}>
+                                <ion-icon name="send-outline"></ion-icon>
+                            </div>
                         </div>
-                        <div className={styles.prompt_sendButton} onClick={sendMessage}>
-                            <ion-icon name="send-outline"></ion-icon>
-                        </div>
+
                     </form>
 
                 </div>

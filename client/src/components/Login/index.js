@@ -84,7 +84,7 @@ const Login = (props) => {
             </form>
             <p>Doesn't have account yet <a href="/register"
             >Sign Up</a></p>
-            <div style={{width: "40%", margin: "0 auto"}}>
+            <div style={{width: "20%", margin: "0 auto"}}>
                 <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
             </div>
 
