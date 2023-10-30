@@ -89,7 +89,7 @@ const ChatInterface = ({socket, onlineState}) => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(image, 0, 0, width, height);
 
-                const resizedImage = canvas.toDataURL('image/jpeg', 0.8); // Convert the resized image to base64 string
+                const resizedImage = canvas.toDataURL('image/jpeg', 0.3); // Convert the resized image to base64 string
 
                 setImageDataURL((prev) => {
                     const newImage = resizedImage;
