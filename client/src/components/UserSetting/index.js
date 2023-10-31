@@ -1,5 +1,4 @@
-
-
+import React from 'react';
 const UserSetting = () =>{
     console.log('day la user setting')
 

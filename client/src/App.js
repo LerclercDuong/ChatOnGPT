@@ -11,12 +11,13 @@ import {useLocation, useNavigate, Navigate} from "react-router-dom";
 import io from "socket.io-client";
 import isAuth from '../src/utils/isAuth';
 
-const socket = io('https://www.gptchathost.online/');
+const socket = io('http://localhost:8080/');
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // Add loading state
     const [userOnline, setUserOnline] = useState(null);
+
     socket.on("pingOnlineState", (data) => {
         setUserOnline(data);
     })
@@ -49,9 +50,6 @@ function App() {
         </div>;
     }
 
-    // if(isLoggedIn === false){
-    //     return <Navigate to="/login" replace/>
-    // }
     return (
         <div className="App">
             <Routes>

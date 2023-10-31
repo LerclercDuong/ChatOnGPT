@@ -1,14 +1,16 @@
 import {useRef, useState, useEffect} from 'react';
 import clsx from "clsx";
 import React from 'react';
+import {Modal} from '@mui/material';
 import styles from './interface.module.css';
 import useScrollDirection from '../../hooks/useScrollDirection.js';
 import isAuth from '../../utils/isAuth';
 import CreateRoomModal from '../../modals/CreateRoomModal';
+import RoomSettingModal from '../../modals/RoomSetting';
 import callAPI from "../../utils/callAPI";
 import timeFormat from "../../utils/timeFormat";
 import EmojiPicker from 'emoji-picker-react';
-
+import { Emoji, EmojiStyle } from 'emoji-picker-react';
 const {createNewRoom, getRoom, getMessages, findUser, getInvite} = callAPI;
 
 const ChatInterface = ({socket, onlineState}) => {
@@ -160,9 +162,7 @@ const ChatInterface = ({socket, onlineState}) => {
     // isAuth(tokenId)
     useEffect(() => {
         socket.on('pingMessage', (data) => {
-            setMessageList((prev) =>
-                [...prev, data]
-            )
+            setMessageList((prev) => [...prev, data])
         })
         return () => {
             socket.off('pingMessage')
@@ -257,15 +257,13 @@ const ChatInterface = ({socket, onlineState}) => {
         typingTimerRef.current = setTimeout(() => {
             if (e.target.value.length > 0) {
                 let data = {
-                    username: userInfo.username,
-                    roomId: roomId,
+                    username: userInfo.username, roomId: roomId,
                 };
                 socket.emit("isTyping", data);
             }
             if (e.target.value.length === 0) {
                 let data = {
-                    username: userInfo.username,
-                    roomId: roomId,
+                    username: userInfo.username, roomId: roomId,
                 };
                 socket.emit("isNotTyping", data);
             }
@@ -301,8 +299,7 @@ const ChatInterface = ({socket, onlineState}) => {
                 images: imageDataURL
             }
             let data = {
-                username: userInfo.username,
-                roomId: roomId,
+                username: userInfo.username, roomId: roomId,
             };
             socket.emit("isNotTyping", data);
             socket.emit("message", {messagePacket});
@@ -319,9 +316,7 @@ const ChatInterface = ({socket, onlineState}) => {
 
     async function handleSendInvite(target) {
         const data = {
-            roomId: roomId,
-            from: userInfo.username,
-            target: target
+            roomId: roomId, from: userInfo.username, target: target
         }
         socket.emit("invite", data)
     }
@@ -378,255 +373,206 @@ const ChatInterface = ({socket, onlineState}) => {
             socket.off("pingJoinRoom");
         };
     }, []);
-    return (
-        <div>
-            <CreateRoomModal
-                modalIsOpen={modalIsOpen}
-                closeModal={closeModal}
-                handleRoomName={handleRoomName}
-                createNewRoom={handleCreateNewRoom}
-            />
-            <div className={styles.container}>
-                <div className={clsx(styles.chat_list, {[styles.open]: chatListOpen === true})}>
-                    <div className={styles.menu_chat}>
-                        <div className={styles.chat_list_navigation}>
-                            <button className={styles.navigation_createNewChat} onClick={openModal}>Create new chat
-                            </button>
-                            <button className={styles.navigation_closeChat}
-                                    onClick={() => {
-                                        setChatListOpen(false);
-                                    }}
-                            >
-                                <ion-icon name="log-out-outline"></ion-icon>
-                            </button>
-                        </div>
-                        <div className={styles.chat_list_conversationList}>
-                            <ul>
-                                {roomList.map(function (room) {
-                                    const opponent = room.name.split(',');
-                                    const slice = opponent.splice(opponent.indexOf(userInfo.username), 1)
-                                    return (
-                                        <li onClick={() => handleConversation(room)}
-                                            className={clsx(styles.conversationList_conversations, {[styles.current_conversation]: room._id === roomId})}>
-                                            <ion-icon name="chatbox-outline"></ion-icon>
-                                            {room.name}</li>
-                                    )
-                                })}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className={styles.user_navigation}
-                         onClick={() => {
-                             setInviteBoxIsOpen(!inviteBoxIsOpen);
-                         }}
-                    >
-                        <div className={clsx(styles.user_notification, {[styles.hide]: inviteBoxIsOpen === false})}>
-                            Invitations
-                            <ul>
-                                {inviteList.length > 0 && inviteList.map(function (invite) {
-                                    return (
-                                        <li>
-                                            <form className={styles.user_invitations_tags}
-                                                  onSubmit={() => handleAcceptInvitation(invite)}>
-                                             <span>
-                        <img src={invite.fromProfilePicture}/>
-                        <p>{invite.from.username}</p>
-                        </span>
-                                                <button type={"submit"}>
-                                                    <ion-icon name="person-add-outline"></ion-icon>
-                                                </button>
-                                            </form>
-
-                                        </li>
-                                    )
-
-                                })}
-                            </ul>
-                        </div>
-                        <div className={styles.user_info}>
-                            <img src={userInfo.profilePicture}/>
-                            <p>{userInfo.username}</p>
-                        </div>
-                        <a href={'/user/setting'}>
-                            <ion-icon name="settings-outline"></ion-icon>
-                        </a>
-                    </div>
-                </div>
-                <div className={styles.chat_box}>
-                    <div className={clsx(styles.chat_box_bar, {[styles.fly]: scrollDirection === "up"})}>
-                        <div className={styles.bar_padding}></div>
-                        <button className={styles.navigation_openChatListButton}
+    return (<div>
+        <CreateRoomModal
+            modalIsOpen={modalIsOpen}
+            closeModal={closeModal}
+            handleRoomName={handleRoomName}
+            createNewRoom={handleCreateNewRoom}
+        />
+        <div className={styles.container}>
+            <div className={clsx(styles.chat_list, {[styles.open]: chatListOpen === true})}>
+                <div className={styles.menu_chat}>
+                    <div className={styles.chat_list_navigation}>
+                        <button className={styles.navigation_createNewChat} onClick={openModal}>Create new chat
+                        </button>
+                        <button className={styles.navigation_closeChat}
                                 onClick={() => {
-                                    setChatListOpen(true);
+                                    setChatListOpen(false);
                                 }}
                         >
                             <ion-icon name="log-out-outline"></ion-icon>
                         </button>
-                        <p>{currentRoomInfo.name}</p>
-                        <div className={styles.add_member}>
-                            {/* cross button  */}
-                            <ion-icon name="add-outline"
-                                      onClick={() => {
-                                          setUserBoxIsOpen(!userBoxIsOpen);
-                                      }}
-                            ></ion-icon>
-                            <div
-                                className={clsx(styles.add_member_box, {[styles.hide]: userBoxIsOpen === false || scrollDirection === "up"})}>
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    handleFindUser();
-                                }
-                                }>
-                                    <input type="text" placeholder="Enter member name" required
-                                           onChange={(e) => {
-                                               setUserFoundName(e.target.value)
-                                           }}
-                                    ></input>
-                                    <button>
-                                        <ion-icon name="search-outline"></ion-icon>
-                                    </button>
-                                </form>
-                                {userFoundInfo.username && (
-                                    <ul>
-                                        <li className={styles.user_adding_tags}>
-                      <span>
-                        <img src={userFoundInfo.profilePicture} alt="User Avatar"/>
-                        <p>{userFoundInfo.username}</p>
-                      </span>
-                                            <button
-                                                onClick={() => {
-                                                    handleSendInvite(userFoundInfo.username)
-                                                }}
-                                            >
-                                                <ion-icon name="person-add-outline"></ion-icon>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                )}
-
-                            </div>
-                        </div>
-
                     </div>
-                    <div className={clsx(styles.chat_content, {[styles.expand]: imageDataURL.length !== 0})}
-                         ref={chatBoxRef}
-                    >
+                    <div className={styles.chat_list_conversationList}>
                         <ul>
-                            <p className={styles.createRoomStatus}>{currentRoomInfo.name} was created</p>
-                            {messageList.map(function (message, index) {
-                                return (
-                                    <li className={clsx(styles.chat_content_messages, {[styles.opponent]: message.sender === userInfo.username})}>
-                                        <div className={styles.messages_wrapper}>
-                                            <img src={message.senderData.profilePicture}
-                                                 className={clsx(styles.chat_avatar, {[styles.hide]: index >= 1 && message.sender == messageList[index - 1].sender})}/>
-                                            {/* <p>{message.username}</p> */}
-                                            <div style={{
-                                                display: "flex",
-                                                justifyContent: "flex-start",
-                                                flexDirection: "column"
-                                            }}>
-                                                <p className={styles.messages_content}> {message.content} <span
-                                                    className={styles.message_time}>{timeFormat(message.timestamp)} by {message.sender}</span>
-                                                </p>
-                                                {message.images.length !== 0 && (
-                                                    <div className={styles.message_image_wrapper}>
-                                                        {(message.images).map(function (url, imageIndex) {
-                                                            return (
-                                                                // <LazyLoadImage src={Image}
-                                                                //                width={600} height={400}
-                                                                //                alt="Image Alt"
-                                                                // />
-                                                                <img
-                                                                    src={url}
-                                                                    className={styles.message_image}
-                                                                />
-                                                            )
-                                                        })}
-                                                    </div>
-                                                )}
-
-                                            </div>
-
-
-                                        </div>
-                                    </li>
-                                )
+                            {roomList.map(function (room) {
+                                const opponent = room.name.split(',');
+                                const slice = opponent.splice(opponent.indexOf(userInfo.username), 1)
+                                return (<li onClick={() => handleConversation(room)}
+                                            className={clsx(styles.conversationList_conversations, {[styles.current_conversation]: room._id === roomId})}>
+                                    <ion-icon name="chatbox-outline"></ion-icon>
+                                    {room.name}</li>)
                             })}
-                            {typingUser.map(function (data, index) {
-                                if (data.roomId === roomId && data.username !== userInfo.username) {
-                                    return (
-                                        <h4 className={styles.isTypingStatus}>{data.username} is typing...</h4>
-                                    )
-                                }
-                            })}
-                            <div ref={messagesEndRef}/>
                         </ul>
-
                     </div>
+                </div>
 
-                    <form className={styles.chat_box_prompt} draggable onDrag={onPaste}>
-                        {imageDataURL.length !== 0 && (
-                            <div className={styles.image_preview}>
-                                {imageDataURL.map(function (url, imageIndex) {
-                                    return (
-                                        <div style={{position: "relative"}}>
-                                            <img src={url} alt="Pasted Image" className={styles.images}/>
-                                            <button className={styles.delete_image}
-                                                    onClick={(e) => {
-                                                        e.preventDefault()
-                                                        setImageDataURL((prev) => prev.filter((_, index) => index !== imageIndex));
-                                                    }}
-                                            >
-                                                <ion-icon name="close-circle-outline"></ion-icon>
-                                            </button>
-                                        </div>
+                <div className={styles.user_navigation}
+                     onClick={() => {
+                         setInviteBoxIsOpen(!inviteBoxIsOpen);
+                     }}
+                >
+                    <div className={clsx(styles.user_notification, {[styles.hide]: inviteBoxIsOpen === false})}>
+                        Invitations
+                        <ul>
+                            {inviteList.length > 0 && inviteList.map(function (invite) {
+                                return (<li>
+                                    <form className={styles.user_invitations_tags}
+                                          onSubmit={() => handleAcceptInvitation(invite)}>
+                                             <span>
+                        <img src={invite.fromProfilePicture}/>
+                        <p>{invite.from.username}</p>
+                        </span>
+                                        <button type={"submit"}>
+                                            <ion-icon name="person-add-outline"></ion-icon>
+                                        </button>
+                                    </form>
 
-                                    )
-                                })}
-                            </div>
-                        )}
-                        <textarea className={styles.prompt_textArea} wrap="soft"
-                                  onKeyDown={function (e) {
-                                      // Enter was pressed without shift key
-                                      if (e.keyCode == 13 && !e.shiftKey) {
-                                          // prevent default behavior
-                                          e.preventDefault();
-                                          sendMessage();
-                                      }
-                                  }}
-                                  onChange={handleSendMessage}
-                                  ref={(ref) => {
-                                      if (ref) {
-                                          ref.addEventListener('paste', onPaste);
-                                      }
-                                  }}
+                                </li>)
 
-                                  placeholder="Send a message"
-                                  value={message}>
-
-                        </textarea>
-                        <div className={styles.prompt_feature_area}>
-
-                            <div className={styles.prompt_emoji}>
-                                {emojiPicker && <EmojiPicker className={styles.emojiPicker}/>}
-                                <ion-icon name="happy-outline"
-                                          onClick={() => {
-                                              setEmojiPicker(!emojiPicker);
-                                          }}
-                                ></ion-icon>
-                            </div>
-                            <div className={styles.prompt_sendButton} onClick={sendMessage}>
-                                <ion-icon name="send-outline"></ion-icon>
-                            </div>
-                        </div>
-
-                    </form>
-
+                            })}
+                        </ul>
+                    </div>
+                    <div className={styles.user_info}>
+                        <img src={userInfo.profilePicture}/>
+                        <p>{userInfo.username}</p>
+                    </div>
+                    <a href={'/user/setting'}>
+                        <ion-icon name="settings-outline"></ion-icon>
+                    </a>
                 </div>
             </div>
+            <div className={styles.chat_box}>
+                <div className={clsx(styles.chat_box_bar, {[styles.fly]: scrollDirection === "up"})}>
+                    <div className={styles.bar_padding}></div>
+                    <button className={styles.navigation_openChatListButton}
+                            onClick={() => {
+                                setChatListOpen(true);
+                            }}
+                    >
+                        <ion-icon name="log-out-outline"></ion-icon>
+                    </button>
+                    <p>{currentRoomInfo.name}</p>
+
+                    <div className={styles.add_member}>
+                        <RoomSettingModal/>
+
+                    </div>
+
+                </div>
+                <div className={clsx(styles.chat_content, {[styles.expand]: imageDataURL.length !== 0})}
+                     ref={chatBoxRef}
+                >
+                    <ul>
+                        <p className={styles.createRoomStatus}>{currentRoomInfo.name} was created</p>
+                        {messageList.map(function (message, index) {
+                            return (
+                                <li className={clsx(styles.chat_content_messages, {[styles.opponent]: message.sender === userInfo.username})}>
+                                    <div className={styles.messages_wrapper}>
+                                        <img src={message.senderData.profilePicture}
+                                             className={clsx(styles.chat_avatar, {[styles.hide]: index >= 1 && message.sender == messageList[index - 1].sender})}/>
+                                        {/* <p>{message.username}</p> */}
+                                        <div style={{
+                                            display: "flex", justifyContent: "flex-start", flexDirection: "column"
+                                        }}>
+                                            <p className={styles.messages_content}> {message.content}
+                                                {/*<Emoji unified="1f423" size="25" />*/}
+                                                <span className={styles.message_time}>  {timeFormat(message.timestamp)} by {message.sender}</span>
+                                            </p>
+                                            {message.images.length !== 0 && (
+                                                <div className={styles.message_image_wrapper}>
+                                                    {(message.images).map(function (url, imageIndex) {
+                                                        return (// <LazyLoadImage src={Image}
+                                                            //                width={600} height={400}
+                                                            //                alt="Image Alt"
+                                                            // />
+                                                            <img
+                                                                src={url}
+                                                                className={styles.message_image}
+                                                            />)
+                                                    })}
+                                                </div>)}
+
+                                        </div>
+
+
+                                    </div>
+                                </li>)
+                        })}
+                        {typingUser.map(function (data, index) {
+                            if (data.roomId === roomId && data.username !== userInfo.username) {
+                                return (<h4 className={styles.isTypingStatus}>{data.username} is typing...</h4>)
+                            }
+                        })}
+                        <div ref={messagesEndRef}/>
+                    </ul>
+
+                </div>
+
+                <form className={styles.chat_box_prompt} draggable onDrag={onPaste}>
+                    {imageDataURL.length !== 0 && (<div className={styles.image_preview}>
+                        {imageDataURL.map(function (url, imageIndex) {
+                            return (<div style={{position: "relative"}}>
+                                    <img src={url} alt="Pasted Image" className={styles.images}/>
+                                    <button className={styles.delete_image}
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setImageDataURL((prev) => prev.filter((_, index) => index !== imageIndex));
+                                            }}
+                                    >
+                                        <ion-icon name="close-circle-outline"></ion-icon>
+                                    </button>
+                                </div>
+
+                            )
+                        })}
+                    </div>)}
+                    <textarea className={styles.prompt_textArea} wrap="soft"
+                              onKeyDown={function (e) {
+                                  // Enter was pressed without shift key
+                                  if (e.keyCode == 13 && !e.shiftKey) {
+                                      // prevent default behavior
+                                      e.preventDefault();
+                                      sendMessage();
+                                  }
+                              }}
+                              onChange={handleSendMessage}
+                              ref={(ref) => {
+                                  if (ref) {
+                                      ref.addEventListener('paste', onPaste);
+                                  }
+                              }}
+
+                              placeholder="Send a message"
+                              value={message}>
+
+                        </textarea>
+                    <div className={styles.prompt_feature_area}>
+
+                        <div className={styles.prompt_emoji}>
+                            {emojiPicker && <EmojiPicker
+                                            className={styles.emojiPicker}
+                                            onEmojiClick={(emoji, event)=>{
+                                                console.log(emoji)
+                                            }}
+                            />}
+                            <ion-icon name="happy-outline"
+                                      onClick={() => {
+                                          setEmojiPicker(!emojiPicker);
+                                      }}
+                            ></ion-icon>
+                        </div>
+                        <div className={styles.prompt_sendButton} onClick={sendMessage}>
+                            <ion-icon name="send-outline"></ion-icon>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
-    );
+    </div>);
 }
 
 export default ChatInterface;

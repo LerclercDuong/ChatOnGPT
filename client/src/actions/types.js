@@ -4,4 +4,5 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
 export const SET_MESSAGE = "SET_MESSAGE";
 export const LOGOUT = "LOGOUT";
-export const SEND_MESSAGE = "SEND_MESSAGE";
+export const LOGIN = "LOGIN";
+export const REGISTER = "REGISTER";

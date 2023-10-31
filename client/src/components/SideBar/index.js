@@ -3,7 +3,7 @@ import axios from 'axios';
 import {Navigate} from "react-router-dom";
 import {useState} from 'react';
 import {connect} from 'react-redux';
-import {login} from '../../actions/auth';
+import {login} from '../../actions/authAction';
 import styles from './login.module.css';
 
 const SideBar = (props) => {
