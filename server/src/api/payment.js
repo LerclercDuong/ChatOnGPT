@@ -25,13 +25,15 @@ class Payment {
         // const localhostIPAddress = networkInterfaces['lo'][0].address;
 
         // console.log(`Localhost IP Address: ${localhostIPAddress}`);
-        const embed_data = {
-            redirecturl: "http://localhost:8084/UserManagement/MainController?action=CreateOrder&paymentMethod=ZaloPay",
-        };
+        
         
         const jsonString = Object.keys(req.body)[0];
         const item  = null;
         const payment_data = JSON.parse(jsonString);
+
+        const embed_data = {
+            redirecturl: `http://localhost:8084/UserManagement/MainController?action=CreateOrder&paymentMethod=ZaloPay&email=${payment_data.email}`,
+        };
 
         console.log(payment_data);
         // create order 
