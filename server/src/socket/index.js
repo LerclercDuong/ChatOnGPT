@@ -73,25 +73,40 @@ function socketIO(io) {
                 socket.to(data.messagePacket.roomId).emit("pingMessage", pingMessage);
             }
 
-            if(data.messagePacket.content.startsWith('/gpt')){
+            if (data.messagePacket.content.startsWith('/gpt')) {
                 const question = data.messagePacket.content.slice(3);
                 const answer = await gptServices.generateAnswer(question)
 
                 let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
 
-
+                const chatBotData = await userServices.find({username: 'GPTChatbot'});
                 const gptMessage = {
-                    sender: "GPTChatbot",
-                    senderData: {
-                        profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
-                    },
-                    images: [],
-                    roomId: data.messagePacket.roomId,
-                    content: cleanedAnswer,
-                    timestamp: new Date()
+                    messagePacket: {
+                        sender: "GPTChatbot",
+                        senderData: {
+                            profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
+                        },
+                        images: [],
+                        roomId: data.messagePacket.roomId,
+                        content: cleanedAnswer,
+                        timestamp: new Date()
+                    }
                 }
-                socket.emit("pingMessage", gptMessage);
-                socket.to(data.messagePacket.roomId).emit("pingMessage", gptMessage);
+                const saveMessage = {
+                    messagePacket:{
+                        sender: "GPTChatbot",
+                        senderData: chatBotData._id,
+                        images: [],
+                        roomId: data.messagePacket.roomId,
+                        content: cleanedAnswer,
+                        timestamp: new Date()
+                    }
+                }
+                const gptResponse = await messengerServices.Message.save(saveMessage);
+                console.log(gptResponse)
+
+                socket.emit("pingMessage", gptMessage.messagePacket);
+                socket.to(data.messagePacket.roomId).emit("pingMessage", gptMessage.messagePacket);
 
             }
 
