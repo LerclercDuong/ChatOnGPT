@@ -67,7 +67,7 @@ function socketIO(io) {
                 content: data.messagePacket.content,
                 timestamp: new Date()
             }
-            console.log(pingMessage);
+
             if (handleSuccess) {
                 socket.emit("pingMessage", pingMessage);
                 socket.to(data.messagePacket.roomId).emit("pingMessage", pingMessage);

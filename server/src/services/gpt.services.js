@@ -1,7 +1,7 @@
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: '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',
 });
 
 class GptServices{
