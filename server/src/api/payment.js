@@ -14,8 +14,6 @@ const config = {
     endpoint: "https://sb-openapi.zalopay.vn/v2/create"
 };
 
-
-
 class Payment {
     async doPaymentZaloPay(req, res, next) {
         // Get a list of network interfaces

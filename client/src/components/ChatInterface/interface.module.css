@@ -97,6 +97,7 @@ body {
 
 .chat_box_bar .add_member {
     position: relative;
+    width: fit-content;
 }
 
 .chat_box_bar .add_member_box {

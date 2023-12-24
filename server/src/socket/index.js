@@ -5,13 +5,14 @@ const Messenger = require('../api/messenger');
 const messengerServices = require('../services/messenger.services');
 const Chat = require('./chat.js');
 const Invite = require('./invite.js');
-const {userServices} = require("../services");
+const {userServices, gptServices} = require("../services");
 
 /**
  * Initialize the Socket.IO server.
  * @param {object} io - The Socket.IO server instance.
  */
 function socketIO(io) {
+
     const typingUsers = new Set(); // Set to store typing users
     const onlineUsers = new Set(); // Set to store online users
 
@@ -26,7 +27,6 @@ function socketIO(io) {
 
     // Handle 'connection' event when a client connects
     io.on("connection", (socket) => {
-
         // Handle 'setUsername' event
         socket.on('setUsername', (username) => {
             // Associate the socket ID with the username
@@ -67,10 +67,50 @@ function socketIO(io) {
                 content: data.messagePacket.content,
                 timestamp: new Date()
             }
+
             if (handleSuccess) {
                 socket.emit("pingMessage", pingMessage);
                 socket.to(data.messagePacket.roomId).emit("pingMessage", pingMessage);
             }
+
+            if (data.messagePacket.content.startsWith('/gpt')) {
+                const question = data.messagePacket.content.slice(3);
+                const answer = await gptServices.generateAnswer(question)
+
+                let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
+
+                const chatBotData = await userServices.find({username: 'GPTChatbot'});
+                const gptMessage = {
+                    messagePacket: {
+                        sender: "GPTChatbot",
+                        senderData: {
+                            profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
+                        },
+                        images: [],
+                        roomId: data.messagePacket.roomId,
+                        content: cleanedAnswer,
+                        timestamp: new Date()
+                    }
+                }
+                const saveMessage = {
+                    messagePacket:{
+                        sender: "GPTChatbot",
+                        senderData: chatBotData._id,
+                        images: [],
+                        roomId: data.messagePacket.roomId,
+                        content: cleanedAnswer,
+                        timestamp: new Date()
+                    }
+                }
+                const gptResponse = await messengerServices.Message.save(saveMessage);
+                console.log(gptResponse)
+
+                socket.emit("pingMessage", gptMessage.messagePacket);
+                socket.to(data.messagePacket.roomId).emit("pingMessage", gptMessage.messagePacket);
+
+            }
+
+
         })
 
         // Handle 'isTyping' event
@@ -123,10 +163,10 @@ function socketIO(io) {
             }
             try {
                 const success = await messengerServices.joinRoom(data);
-                if(success){
+                if (success) {
                     socket.to(targetSocketId).emit("pingJoinRoom", data);
                 }
-            }catch (err){
+            } catch (err) {
                 console.log(err.message);
             }
         })

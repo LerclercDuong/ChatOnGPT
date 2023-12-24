@@ -1,37 +1,36 @@
 import axios from "axios";
+
 const API_URL = process.env.REACT_APP_PUBLIC_URL;
 
-const register = (username, email, password) => {
-    return axios.post(API_URL + "signup", {
-        username,
-        email,
-        password,
-    });
-};
 
-const login = async (username, password) => {
-    return await axios
-        .post(API_URL + "/auth/login", {
+class AuthService{
+    register = (username, email, password) => {
+        return axios.post(API_URL + "/auth/signup", {
             username,
+            email,
             password,
-        })
-        .then((response) => {
-            if (response.data) {
-                // console.log(response.data)
-                localStorage.setItem("userData", JSON.stringify(response.data.data));
-                localStorage.setItem("tokenId", response.data.data.tokenID);
-            }
-
-            return response.data;
         });
-};
+    };
+    login = (username, password) => {
+        return axios
+            .post(API_URL + "/auth/login", {
+                username,
+                password,
+            })
+            .then((response) => {
+                if (response.data) {
+                    localStorage.setItem("userData", JSON.stringify(response.data.data));
+                    localStorage.setItem("tokenId", response.data.data.tokenId);
+                }
+                return response.data;
+            });
+    };
+    logout = () => {
+        localStorage.removeItem("userData");
+    };
+}
 
-const logout = () => {
-    localStorage.removeItem("userData");
-};
 
-export default {
-    register,
-    login,
-    logout,
-};
+
+
+export default new AuthService;
