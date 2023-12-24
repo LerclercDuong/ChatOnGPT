@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
+const UnauthenticatedError = require('../errors/un-authenticated')
 
-module.exports = function auth(req, res, next) {
+const auth = (req, res, next) => {
     const authHeader = req.header.authorization;
     if (!token || !token.startsWith('Bearer')) {
         throw new Error('JWT token not found');
@@ -8,7 +9,14 @@ module.exports = function auth(req, res, next) {
     const token = authHeader.split(' ')[1];
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET_KEY)
+        req.user = {
+            userId: payload.userId,
+            username: payload.username
+        }
+        next();
     } catch {
-
+        throw new UnauthenticatedError('Unauthorized');
     }
 }
+
+module.exports = auth;
