@@ -11,13 +11,13 @@ class AuthService {
         const token = jwt.sign({
             data: data.username,
             exp: Math.floor(Date.now() / 1000) + (60 * 60) // token with expire after 1 hour
-        }, 'shhhhh');
-        return token;
+        }, process.env.JWT_SECRET_KEY);
+        return 'Bearer ' + token;
     }
 
     //decrypt jwt token and get user data
     async verifyToken(tokenID) {
-        const data = jwt.verify(tokenID, 'shhhhh');
+        const data = jwt.verify(tokenID, process.env.JWT_SECRET_KEY);
         return data;
     }
 
@@ -32,10 +32,10 @@ class AuthService {
             // If the user exists, check the password
             if (userData && await this.checkPassword(username, password)) {
                 // Generate a new token
-                const newTokenId = jwt.sign({
+                const newTokenId = 'Bearer ' + jwt.sign({
                     data: userData.username,
                     exp: Math.floor(Date.now() / 1000) + (60 * 60) // Token will expire after 1 hour
-                }, 'shhhhh');
+                }, process.env.JWT_SECRET_KEY);
                 // Update the user's token ID in the database
                 await users.updateOne({ username: userData.username }, { $set: { tokenId: newTokenId } });
                 // Find and return the user by username
