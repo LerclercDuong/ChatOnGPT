@@ -19,7 +19,6 @@ const messages = new Schema({
     },
     content: {
         type: String,
-        required: true
     },
     images:{
         type: Array,
@@ -29,6 +28,16 @@ const messages = new Schema({
         type: Date,
         default: Date.now
     }
+});
+messages.pre('find', async function (docs, next) {
+    this.populate({
+        path: "senderData roomId"
+    })
+});
+messages.pre('findOne', async function (docs, next) {
+    this.populate({
+        path: "senderData roomId"
+    })
 });
 messages.pre('save', function (next) {
     this.timestamp = new Date(this.timestamp.getTime() + 7 * 60 * 60 * 1000); // Adjust for GMT+7

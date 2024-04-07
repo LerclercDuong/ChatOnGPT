@@ -1,49 +1,60 @@
-const users = require('../models/users');
-
+const UserModel = require('../models/users');
+const storeService = require('./store.services');
 class UserService {
-    //create user 
-    async create(data) {
-        const new_user = new users(data);
-        return new_user.save().catch();
-    }
-    //find user by id or username
-    async find(data) {
-        var result = {};
-        const username = data.username;
-        const userId = data.userId;
-        //find by username
-        if (username) {
-            result = await users.findOne({ username: username })
-                .then(function (user) {
-                    if (user) {
-                        return user;
-                    }
-                })
+    async UpdateUser(userId, updatedData, image) {
+        const file = image?.profilePicture;
+        if(file){
+            const {key} = await storeService.uploadToS3({userId, file});
+            const data = {
+                profilePicture: key,
+                ...updatedData
+            }
+            const updatedUser = await UserModel.findByIdAndUpdate(
+                userId,
+                {$set: data},
+                {new: true} // Return the updated document
+            );
+            if (!updatedUser) {
+                throw new Error('User not found');
+            }
+            return updatedUser;
+        }else{
+            const updatedUser = await UserModel.findByIdAndUpdate(
+                userId,
+                {$set: updatedData},
+                {new: true} // Return the updated document
+            );
+            if (!updatedUser) {
+                throw new Error('User not found');
+            }
+            return updatedUser;
         }
-        //find by userId
-        if (userId) {
-            result = await users.findOne({ id: userId})
-                .then(function (user) {
-                    if (user) {
-                        return user;
-                    }
-                })
-        }
-        return result;
     }
-    //check user existance
-    async isExist(username) {
-        var exist = false;
-        await users.findOne({ username: username })
-            .then(function (user) {
-                if (user) {
-                    exist = true;
-                }
-            })
-        return exist;
+
+    //create user
+    async GetUserById(userId) {
+        try {
+            return await UserModel.findById(userId).lean();
+        } catch (err) {
+            throw err;
+        }
     }
 
 
+    async GetUserByName(username) {
+        return UserModel.findOne({username: username}).lean();
+    }
+
+    async GetUsersByUsername(keyword) {
+        return UserModel.find({username: {$regex: keyword, $options: 'i'}, role: 'user'}).lean();
+    }
+    async GetUserByEmail(email) {
+        return UserModel.findOne({email: email}).lean();
+    }
+
+    async GetUsers() {
+        return UserModel.find({}).lean();
+    }
 
 }
 

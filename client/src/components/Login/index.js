@@ -14,10 +14,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {useState, useEffect, useCallback} from 'react';
-import {Navigate} from "react-router-dom";
+import {Navigate, useNavigate} from "react-router-dom";
 import axios from 'axios';
-import AuthAction from '../../actions/authAction'
+import {LoginSuccess} from '../../redux/actions/authAction'
 import {useDispatch, useSelector} from "react-redux";
+import {LoginWithUsernameAndPassword} from '../../services/auth.service';
+import {enqueueSnackbar} from "notistack";
 
 function Copyright(props) {
     return (
@@ -34,27 +36,22 @@ function Copyright(props) {
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme({
+    palette: {
+        primary: {
+            main: '#00A67E',
+        },
+        secondary: {
+            main: '#00A67E',
+        },
+    },
+});
 
 export default function Login(props) {
-    const auth = useSelector((state) => state.auth);
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    // const [loginMessage, setLoginMessage] = useState(null);
-    const [authenticated, setAuthenticated] = useState(false);
-    useEffect(() => {
-        console.log(auth)
-    });
-    const responseMessage = (response) => {
-        console.log(response);
-    };
-    const errorMessage = (error) => {
-        console.log(error);
-    };
-
-    // if (authenticated === true) {
-    //     return <Navigate to={"/"} replace/>
-    // }
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -66,25 +63,21 @@ export default function Login(props) {
         }
 
         try {
-            await dispatch(AuthAction(information));
-            if(auth.isLoggedIn === true){
-                setAuthenticated(true);
-                props.handleAuth(true);
-            }
-            // const response = await axios.post(`${process.env.REACT_APP_PUBLIC_URL}/auth/login`, information);
-            // if (response.data.data) {
-            //     const token = response.data.data.tokenId;
-            //     localStorage.setItem('tokenId', token);
-            //     setAuthenticated(true);
-            // }
-            // props.handleAuth(true);
+            const loginData = await LoginWithUsernameAndPassword(information?.username, information?.password);
+            dispatch(LoginSuccess(loginData.userData));
+            // navigate('/')
         } catch (error) {
             // Handle error if needed
+            enqueueSnackbar('Wrong username or password', {variant: 'error'})
         }
     };
-    if (authenticated === true) {
-        return <Navigate to={"/"} replace/>
-    }else
+
+    useEffect(() => {
+        if (isAuthenticated === true) {
+            navigate('/')
+        }
+    });
+
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">

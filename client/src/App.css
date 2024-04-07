@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+
+:root {
+  --mui-palette-primary-main: #00A67E;
+  --mui-palette-primary-light: #42a5f5;
+  --mui-palette-primary-dark: #1565c0;
+  --mui-palette-primary-contrastText: #fff;
+  /* ...other variables */
+}

@@ -1,7 +1,7 @@
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: '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',
 });
 
 class GptServices{
@@ -15,9 +15,10 @@ class GptServices{
                     },
                     { role: "user", content: prompt },
                 ],
-                model: "gpt-3.5-turbo-1106",
+                model: "gpt-4-1106-preview",
                 response_format: { type: "json_object" },
             });
+            console.log(completion)
             return completion.choices[0].message.content
         } catch (error) {
             console.error('Error generating answer:', error);

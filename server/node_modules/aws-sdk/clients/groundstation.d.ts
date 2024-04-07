@@ -586,6 +586,14 @@ declare namespace GroundStation {
      * Tags assigned to a contact.
      */
     tags?: TagsMap;
+    /**
+     *  Projected time in UTC your satellite will set below the receive mask. This time is based on the satellite's current active ephemeris for future contacts and the ephemeris that was active during contact execution for completed contacts. This field is not present for contacts with a SCHEDULING or SCHEDULED status. 
+     */
+    visibilityEndTime?: Timestamp;
+    /**
+     *  Projected time in UTC your satellite will rise above the receive mask. This time is based on the satellite's current active ephemeris for future contacts and the ephemeris that was active during contact execution for completed contacts. This field is not present for contacts with a SCHEDULING or SCHEDULED status. 
+     */
+    visibilityStartTime?: Timestamp;
   }
   export interface ContactIdResponse {
     /**
@@ -663,11 +671,11 @@ declare namespace GroundStation {
   }
   export interface CreateMissionProfileRequest {
     /**
-     * Amount of time after a contact ends that you’d like to receive a CloudWatch event indicating the pass has finished.
+     * Amount of time after a contact ends that you’d like to receive a Ground Station Contact State Change event indicating the pass has finished.
      */
     contactPostPassDurationSeconds?: DurationInSeconds;
     /**
-     * Amount of time prior to contact start you’d like to receive a CloudWatch event indicating an upcoming pass.
+     * Amount of time prior to contact start you’d like to receive a Ground Station Contact State Change event indicating an upcoming pass.
      */
     contactPrePassDurationSeconds?: DurationInSeconds;
     /**
@@ -863,6 +871,14 @@ declare namespace GroundStation {
      * Tags assigned to a contact.
      */
     tags?: TagsMap;
+    /**
+     *  Projected time in UTC your satellite will set below the receive mask. This time is based on the satellite's current active ephemeris for future contacts and the ephemeris that was active during contact execution for completed contacts. 
+     */
+    visibilityEndTime?: Timestamp;
+    /**
+     *  Projected time in UTC your satellite will rise above the receive mask. This time is based on the satellite's current active ephemeris for future contacts and the ephemeris that was active during contact execution for completed contacts. 
+     */
+    visibilityStartTime?: Timestamp;
   }
   export interface DescribeEphemerisRequest {
     /**
@@ -1324,12 +1340,17 @@ declare namespace GroundStation {
   export type IpV4Address = string;
   export type JsonString = string;
   export type KeyAliasArn = string;
+  export type KeyAliasName = string;
   export type KeyArn = string;
   export interface KmsKey {
     /**
      * KMS Alias Arn.
      */
     kmsAliasArn?: KeyAliasArn;
+    /**
+     * KMS Alias Name.
+     */
+    kmsAliasName?: KeyAliasName;
     /**
      * KMS Key Arn.
      */
@@ -1897,11 +1918,11 @@ declare namespace GroundStation {
   }
   export interface UpdateMissionProfileRequest {
     /**
-     * Amount of time after a contact ends that you’d like to receive a CloudWatch event indicating the pass has finished.
+     * Amount of time after a contact ends that you’d like to receive a Ground Station Contact State Change event indicating the pass has finished.
      */
     contactPostPassDurationSeconds?: DurationInSeconds;
     /**
-     * Amount of time after a contact ends that you’d like to receive a CloudWatch event indicating the pass has finished.
+     * Amount of time after a contact ends that you’d like to receive a Ground Station Contact State Change event indicating the pass has finished.
      */
     contactPrePassDurationSeconds?: DurationInSeconds;
     /**

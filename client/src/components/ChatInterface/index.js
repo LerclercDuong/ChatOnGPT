@@ -10,7 +10,8 @@ import RoomSettingModal from '../../modals/RoomSetting';
 import callAPI from "../../utils/callAPI";
 import timeFormat from "../../utils/timeFormat";
 import EmojiPicker from 'emoji-picker-react';
-import { Emoji, EmojiStyle } from 'emoji-picker-react';
+import {Emoji, EmojiStyle} from 'emoji-picker-react';
+
 const {createNewRoom, getRoom, getMessages, findUser, getInvite} = callAPI;
 
 const ChatInterface = ({socket, onlineState}) => {
@@ -20,7 +21,7 @@ const ChatInterface = ({socket, onlineState}) => {
     const [isLoading, setIsLoading] = useState(true); // Add loading state
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
-    const [typingUser, setTypingUser] = useState([])
+    const [typingUser, setTypingUser] = useState([]);
     const typingTimerRef = useRef(null);
     //users states
     const [userInfo, setUserInfo] = useState({});
@@ -416,7 +417,8 @@ const ChatInterface = ({socket, onlineState}) => {
                                         }}>
                                             <p className={styles.messages_content}> {message.content}
                                                 {/*<Emoji unified="1f423" size="25" />*/}
-                                                <span className={styles.message_time}>  {timeFormat(message.timestamp)} by {message.sender}</span>
+                                                <span
+                                                    className={styles.message_time}>  {timeFormat(message.timestamp)} by {message.sender}</span>
                                             </p>
                                             {message.images.length !== 0 && (
                                                 <div className={styles.message_image_wrapper}>
@@ -484,16 +486,14 @@ const ChatInterface = ({socket, onlineState}) => {
 
                               placeholder="Send a message"
                               value={message}>
-
                         </textarea>
                     <div className={styles.prompt_feature_area}>
-
                         <div className={styles.prompt_emoji}>
                             {emojiPicker && <EmojiPicker
-                                            className={styles.emojiPicker}
-                                            onEmojiClick={(emoji, event)=>{
-                                                console.log(emoji)
-                                            }}
+                                className={styles.emojiPicker}
+                                onEmojiClick={(emoji, event) => {
+                                    console.log(emoji)
+                                }}
                             />}
                             <ion-icon name="happy-outline"
                                       onClick={() => {

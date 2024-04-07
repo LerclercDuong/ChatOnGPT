@@ -3,11 +3,11 @@ function useScrollDirection(e) {
     const [scrollDirection, setScrollDirection] = useState(null);
 
     useEffect(() => {
-        const { offsetTop } = e.current
+        const { offsetTop } = e?.current
         let lastScrollY = offsetTop;
 
         const updateScrollDirection = () => {
-            const { offsetTopNew } = e.current
+            const { offsetTopNew } = e?.current
             const scrollY = offsetTopNew;
             const direction = scrollY > lastScrollY ? "down" : "up";
             if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
