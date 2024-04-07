@@ -16,11 +16,19 @@ const rooms = new Schema({
         default: Date.now
     }
 });
-
+rooms.pre('find', async function (docs, next) {
+    this.populate({
+        path: "participants"
+    })
+});
+rooms.pre('findOne', async function (docs, next) {
+    this.populate({
+        path: "participants"
+    })
+});
 rooms.path('participants').validate(function (value) {
     // Use a Set to store unique participant IDs
     const uniqueParticipants = new Set(value.map(String));
-
     // Check if the Set's size is the same as the original array's length
     return uniqueParticipants.size === value.length;
 }, 'Duplicate participants are not allowed.');

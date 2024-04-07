@@ -12,7 +12,7 @@ const invitations = new Schema({
         ref: 'users',
         required: true
     },
-    target: {
+    to: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users',
         required: true
@@ -22,9 +22,18 @@ const invitations = new Schema({
         default: Date.now
     }
 });
-
+invitations.pre('find', async function (docs, next) {
+    this.populate({
+        path: "from to roomId"
+    })
+});
+invitations.pre('findOne', async function (docs, next) {
+    this.populate({
+        path: "from to roomId"
+    })
+});
 // Create a compound unique index on roomId, from, and target
-invitations.index({ roomId: 1, from: 1, target: 1 }, { unique: true });
+// invitations.index({ roomId: 1, from: 1, target: 1 }, { unique: true });
 
 module.exports = mongoose.model('invitations', invitations);
 

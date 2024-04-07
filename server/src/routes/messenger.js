@@ -2,19 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Messenger = require('../api/messenger');
 
-//message function router
-// router.post('/send', Messenger.sendMessage);
-router.get('/get/:roomId', Messenger.getMessageByRoomId);
-//room function router
-router.post('/room/create', Messenger.createRoom);
-router.post('/room/join/:roomId', Messenger.joinRoom);
-router.get('/room/get/:username', Messenger.getRoomsByUsername);
-router.post('/room/invite/send', Messenger.sendInvitation);
-router.get('/room/invite/get/:username', Messenger.getInviteByUsername);
-//user function router
-router.get('/user/find/:username', Messenger.findUserByUsername);
-// router.post('/uploadFile', Messenger.uploadFile);
-
-
+router.get('/rooms/:roomId', Messenger.GetRoomInfo);
+router.get('/rooms/:roomId/messages', Messenger.GetMessageListInRoom);
+router.get('/users/:userId/rooms', Messenger.GetRoomListOfUser);
+router.post('/rooms/:roomId/invite', Messenger.SendInvite);
+router.put('/invite/:inviteId/accept', Messenger.AcceptInvite);
+router.get('/invite/:inviteId', Messenger.GetInvitationById);
+router.post('/rooms/create', Messenger.CreateNewRoom);
 
 module.exports = router;

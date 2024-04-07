@@ -1,76 +1,87 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const users = require('../models/users');
 const userService = require('../services/user.services.js');
+const TokenModel = require('../models/tokens')
+const moment = require("moment");
+const UserModel = require("../models/users");
+const tokenService = require('../services/token.service');
+const CheckLogin = require('../utils/checkLogin.js');
+const ApiError = require("../utils/ApiError");
 
 class AuthService {
 
-    //generate jwt token
-    //params: data (user data)
-    async generateToken(data) {
-        const token = jwt.sign({
-            data: data.username,
-            exp: Math.floor(Date.now() / 1000) + (60 * 60) // token with expire after 1 hour
-        }, process.env.JWT_SECRET_KEY);
-        return 'Bearer ' + token;
-    }
-
-    //decrypt jwt token and get user data
-    async verifyToken(tokenID) {
-        const data = jwt.verify(tokenID, process.env.JWT_SECRET_KEY);
-        return data;
-    }
-
-    async expireToken(tokenID) {
-
-    }
-    //login function
-    async login(username, password) {
-        try {
-            // Check if the user exists and get user data
-            const userData = await userService.find({username});
-            // If the user exists, check the password
-            if (userData && await this.checkPassword(username, password)) {
-                // Generate a new token
-                const newTokenId = 'Bearer ' + jwt.sign({
-                    data: userData.username,
-                    exp: Math.floor(Date.now() / 1000) + (60 * 60) // Token will expire after 1 hour
-                }, process.env.JWT_SECRET_KEY);
-                // Update the user's token ID in the database
-                await users.updateOne({ username: userData.username }, { $set: { tokenId: newTokenId } });
-                // Find and return the user by username
-                return await userService.find({ username });
-            } else {
-                throw new Error("Wrong username or password");
+    //signup function
+    async SignUp(username, password) {
+        try{
+            const userExists = await UserModel.findOne({username: username});
+            if (userExists) throw new ApiError(203, "User is exist")
+            const userData = {
+                username: username,
+                password: password,
+                role: 'user',
             }
-        } catch (error) {
-            throw error; // Re-throw the error for higher-level error handling
+            const newUser = new UserModel({...userData});
+            return newUser.save();
+        }catch(e){
+            throw new ApiError(500, e.message)
+        }
+
+    }
+
+    //login function
+    async LoginWithUsernameAndPassword(username, password) {
+        if (await CheckLogin(username, password)) {
+            return await userService.GetUserByName(username);
+        } else {
+            throw new Error("Wrong username or password");
         }
     }
 
+    async GenerateAuthToken(userData){
+        const accessTokenId = await tokenService.GenerateToken(userData, 'ACCESS', process.env.ACCESS_SECRET_KEY, process.env.ACCESS_TOKEN_LIFE_HOUR + 'h');
+        const refreshTokenId = await tokenService.GenerateToken(userData, 'REFRESH', process.env.REFRESH_SECRET_KEY, process.env.REFRESH_TOKEN_LIFE_DAY + 'd');
+
+        const accessTokenExpires = moment().add(process.env.ACCESS_TOKEN_LIFE_HOUR, 'hours');
+        const refreshTokenExpires = moment().add(process.env.REFRESH_TOKEN_LIFE_DAY, 'days');
+
+        await tokenService.SaveTokenToDB(userData._id, refreshTokenId, 'REFRESH', refreshTokenExpires);
+
+        return {
+            access: {
+                token: accessTokenId,
+                exp: accessTokenExpires.toDate()
+            },
+            refresh: {
+                token: refreshTokenId,
+                exp: refreshTokenExpires.toDate()
+            }
+        };
+    }
+
+    //Find in database if exist refresh token, generate new access token
+    //return new refresh token
+    async RefreshAuthToken(refreshToken) {
+        try {
+            const refreshTokenDoc = await tokenService.VerifyToken(refreshToken, 'REFRESH', process.env.REFRESH_SECRET_KEY);
+
+            const userData = await userService.GetUserById(refreshTokenDoc.user);
+
+            if (!userData) {
+                throw new Error();
+            }
+
+            await TokenModel.deleteOne({ _id: refreshTokenDoc._id });
+
+            return this.GenerateAuthToken(userData);
+        } catch (err) {
+            throw err;
+        }
+    }
 
     async logOut(username, password) {
 
     }
 
-    async checkPassword(username, password) {
-        var password_correct = false;
-        const hash_password = await users.findOne({ username: username })
-            .then((user) => {
-                if (user) {
-                    return user.password;
-                } else {
-                    return ' ';
-                }
-            })
-        await bcrypt.compare(password, hash_password)
-            .then(function (result) {
-                if (result == true) {
-                    password_correct = true;
-                }
-            });
-        return password_correct;
-    }
+
 }
 
 module.exports = new AuthService;

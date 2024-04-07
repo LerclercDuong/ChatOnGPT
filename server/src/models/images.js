@@ -27,4 +27,4 @@ const images = new Schema({
     }
 });
 
-module.exports = mongoose.model('messages', messages);
+module.exports = mongoose.model('images', images);

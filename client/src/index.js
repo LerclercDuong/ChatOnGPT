@@ -4,9 +4,10 @@ import {BrowserRouter} from 'react-router-dom';
 import './index.css';
 import {Provider} from 'react-redux';
 import App from './App';
-import store from './store/index.js';
+import store from './redux/store/index.js';
 import {GoogleOAuthProvider} from '@react-oauth/google';
 import reportWebVitals from './reportWebVitals';
+import { SnackbarProvider, useSnackbar } from 'notistack';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,7 +15,9 @@ root.render(
     <GoogleOAuthProvider clientId="127584468731-i490h6p39anutta3f53g3o7s8t854tkm.apps.googleusercontent.com">
         <BrowserRouter>
             <Provider store={store}>
-                <App/>
+                <SnackbarProvider>
+                    <App/>
+                </SnackbarProvider>
             </Provider>
         </BrowserRouter>
     </GoogleOAuthProvider>,

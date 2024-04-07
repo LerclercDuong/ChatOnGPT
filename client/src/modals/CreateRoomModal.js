@@ -1,6 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Modal from 'react-modal';
 import styles from '../components/ChatInterface/interface.module.css'; // Make sure to import your CSS styles if needed
+import {CreateNewRoom} from '../services/chat.service';
+import {useDispatch, useSelector} from "react-redux";
+
 
 const customStyles = {
   content: {
@@ -19,7 +22,18 @@ const customStyles = {
   }
 };
 
-const CreateRoomModal = ({ modalIsOpen, closeModal, handleRoomName, createNewRoom }) => {
+const CreateRoomModal = ({ modalIsOpen, closeModal }) => {
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.auth.user);
+  const [roomName, setRoomName] = useState('');
+  async function Create(e) {
+    try {
+        const data = await CreateNewRoom({roomName: roomName, creator: userInfo })
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+  }
+
   let subtitle;
 
   function afterOpenModal() {
@@ -38,8 +52,8 @@ const CreateRoomModal = ({ modalIsOpen, closeModal, handleRoomName, createNewRoo
       animationDuration={1000}
     >
       <h2 ref={(_subtitle) => (subtitle = _subtitle)}>Create conversation</h2>
-      <form onSubmit={createNewRoom} className={styles.createNewRoomForm}>
-        <input type="text" placeholder="Enter room name" onChange={handleRoomName} required />
+      <form onSubmit={Create} className={styles.createNewRoomForm}>
+        <input type="text" placeholder="Enter room name" onChange={(e)=>setRoomName(e.target.value)} required />
         <button className={styles.createConversationButton}>Creating confirm</button>
       </form>
     </Modal>
