@@ -96,39 +96,39 @@ function socketIO(io) {
                     socket.to(data.roomId).emit("pingMessage", pingMessage);
                 }
     
-                if (data.content.startsWith('/gpt')) {
-                    const question = data.content.slice(3);
-                    const answer = await gptServices.generateAnswer(question)
+                // if (data.content.startsWith('/gpt')) {
+                //     const question = data.content.slice(3);
+                //     const answer = await gptServices.generateAnswer(question)
     
-                    let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
+                //     let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
     
-                    const chatBotData = await userServices.GetUserByName('GPTChatbot');
-                    const gptMessage = {
-                        messagePacket: {
-                            sender: "GPTChatbot",
-                            senderData: {
-                                profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
-                            },
-                            images: [],
-                            roomId: data.roomId,
-                            content: cleanedAnswer,
-                            timestamp: new Date()
-                        }
-                    }
-                    const saveMessage = {
-                        messagePacket: {
-                            sender: "GPTChatbot",
-                            senderData: chatBotData._id,
-                            images: [],
-                            roomId: data.roomId,
-                            content: cleanedAnswer,
-                            timestamp: new Date()
-                        }
-                    }
-                    const gptResponse = await messengerServices.SaveMessageToDB(saveMessage.messagePacket)
-                    socket.emit("pingMessage", gptMessage.messagePacket);
-                    socket.to(data.roomId).emit("pingMessage", gptMessage.messagePacket);
-                }
+                //     const chatBotData = await userServices.GetUserByName('GPTChatbot');
+                //     const gptMessage = {
+                //         messagePacket: {
+                //             sender: "GPTChatbot",
+                //             senderData: {
+                //                 profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
+                //             },
+                //             images: [],
+                //             roomId: data.roomId,
+                //             content: cleanedAnswer,
+                //             timestamp: new Date()
+                //         }
+                //     }
+                //     const saveMessage = {
+                //         messagePacket: {
+                //             sender: "GPTChatbot",
+                //             senderData: chatBotData._id,
+                //             images: [],
+                //             roomId: data.roomId,
+                //             content: cleanedAnswer,
+                //             timestamp: new Date()
+                //         }
+                //     }
+                //     const gptResponse = await messengerServices.SaveMessageToDB(saveMessage.messagePacket)
+                //     socket.emit("pingMessage", gptMessage.messagePacket);
+                //     socket.to(data.roomId).emit("pingMessage", gptMessage.messagePacket);
+                // }
             }catch(e){
 
             }
