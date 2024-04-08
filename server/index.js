@@ -51,6 +51,4 @@ const io = require("socket.io")(httpServer, {
 
 socketIO(io);
 
-httpServer.listen(PORT, function () {
-    console.log('listening on port 8080');
-});
+httpServer.listen(PORT);

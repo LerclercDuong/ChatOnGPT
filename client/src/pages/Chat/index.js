@@ -25,7 +25,7 @@ import io from "socket.io-client";
 import {useSnackbar} from "notistack";
 import {useNavigate} from "react-router-dom";
 
-const socket = io('http://localhost:8080/');
+const socket = io('https://chatongpt-c29w.onrender.com/');
 const ChatInterface = () => {
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.auth.user);
@@ -62,7 +62,6 @@ const ChatInterface = () => {
     async function LoadInvitationList(userId) {
         if (userId != null) {
             const invitationList = await GetInvitationList(userId);
-
             dispatch(LoadInvitationListAction({invitationList}));
         }
     }
