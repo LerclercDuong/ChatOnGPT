@@ -69,7 +69,7 @@ users.pre('save', async function (next) {
         this.password = await bcrypt.hash(this.password, saltRounds);
         next();
     } catch (error) {
-        throw new ApiError(403, err.message)
+        throw new ApiError(403, error.message)
     }
 });
 
