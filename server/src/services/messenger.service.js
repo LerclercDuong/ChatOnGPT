@@ -46,7 +46,8 @@ class MessengerService {
     }
 
     async SaveMessageToDB(data) {
-        if (!data.images.empty) {
+        try{
+         if (!data.images.empty) {
             (data.images).forEach((img) => {
                 const file = Buffer.from(img.replace(/^data:image\/\w+;base64,/, ""), 'base64');
                 const userId = data.senderData;
@@ -54,7 +55,10 @@ class MessengerService {
             })
         }
         const newMessage = new MessageModel({...data});
-        return newMessage.save();
+        return newMessage.save().catch();   
+        }catch(e){
+            console.log(e)
+        }
     }
 
     async GetInviteListOfUser(userId) {

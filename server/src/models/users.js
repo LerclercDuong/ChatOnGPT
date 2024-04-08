@@ -64,13 +64,12 @@ users.pre('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
     }
-
         // Generate a salt and hash the password
         const saltRounds = 10;
         this.password = await bcrypt.hash(this.password, saltRounds);
         next();
     } catch (error) {
-        throw new ApiError(403, 'Username invalid')
+        throw new ApiError(403, err.message)
     }
 });
 
