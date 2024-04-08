@@ -1,12 +1,13 @@
 const OpenAI = require('openai');
 require("dotenv").config()
-const openai = new OpenAI({
-    apiKey: GPT_KEY,
-});
+
 
 class GptServices{
     async generateAnswer(prompt){
         try {
+            const openai = new OpenAI({
+                apiKey: process.env.GPT_KEY,
+            });
             const completion = await openai.chat.completions.create({
                 messages: [
                     {
