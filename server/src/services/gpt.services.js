@@ -1,7 +1,7 @@
 const OpenAI = require('openai');
-
+require("dotenv").config()
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: GPT_KEY,
 });
 
 class GptServices{

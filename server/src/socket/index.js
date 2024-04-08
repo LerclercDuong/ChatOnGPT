@@ -77,57 +77,62 @@ function socketIO(io) {
         // Handle 'message' event
         socket.on('message', async (data) => {
             // Save message to the database
-            const handleSuccess = await messengerServices.SaveMessageToDB(data);
-            const userData = await userServices.GetUserById(data.senderData);
-            const pingMessage = {
-                sender: data.sender,
-                senderData: {
-                    profilePicture: userData?.profilePicture
-                },
-                images: data.images,
-                roomId: data.roomId,
-                content: data.content,
-                timestamp: new Date()
-            }
-
-            if (handleSuccess) {
-                socket.emit("pingMessage", pingMessage);
-                socket.to(data.roomId).emit("pingMessage", pingMessage);
-            }
-
-            if (data.content.startsWith('/gpt')) {
-                const question = data.content.slice(3);
-                const answer = await gptServices.generateAnswer(question)
-
-                let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
-
-                const chatBotData = await userServices.GetUserByName('GPTChatbot');
-                const gptMessage = {
-                    messagePacket: {
-                        sender: "GPTChatbot",
-                        senderData: {
-                            profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
-                        },
-                        images: [],
-                        roomId: data.roomId,
-                        content: cleanedAnswer,
-                        timestamp: new Date()
-                    }
+            try{
+                const handleSuccess = await messengerServices.SaveMessageToDB(data);
+                const userData = await userServices.GetUserById(data.senderData);
+                const pingMessage = {
+                    sender: data.sender,
+                    senderData: {
+                        profilePicture: userData?.profilePicture
+                    },
+                    images: data.images,
+                    roomId: data.roomId,
+                    content: data.content,
+                    timestamp: new Date()
                 }
-                const saveMessage = {
-                    messagePacket: {
-                        sender: "GPTChatbot",
-                        senderData: chatBotData._id,
-                        images: [],
-                        roomId: data.roomId,
-                        content: cleanedAnswer,
-                        timestamp: new Date()
-                    }
+    
+                if (handleSuccess) {
+                    socket.emit("pingMessage", pingMessage);
+                    socket.to(data.roomId).emit("pingMessage", pingMessage);
                 }
-                const gptResponse = await messengerServices.SaveMessageToDB(saveMessage.messagePacket)
-                socket.emit("pingMessage", gptMessage.messagePacket);
-                socket.to(data.roomId).emit("pingMessage", gptMessage.messagePacket);
+    
+                if (data.content.startsWith('/gpt')) {
+                    const question = data.content.slice(3);
+                    const answer = await gptServices.generateAnswer(question)
+    
+                    let cleanedAnswer = answer.replace(/[{}" ]/g, ' ').trim();
+    
+                    const chatBotData = await userServices.GetUserByName('GPTChatbot');
+                    const gptMessage = {
+                        messagePacket: {
+                            sender: "GPTChatbot",
+                            senderData: {
+                                profilePicture: "https://pnghive.com/core/images/full/chat-gpt-logo-png-1680406057.png"
+                            },
+                            images: [],
+                            roomId: data.roomId,
+                            content: cleanedAnswer,
+                            timestamp: new Date()
+                        }
+                    }
+                    const saveMessage = {
+                        messagePacket: {
+                            sender: "GPTChatbot",
+                            senderData: chatBotData._id,
+                            images: [],
+                            roomId: data.roomId,
+                            content: cleanedAnswer,
+                            timestamp: new Date()
+                        }
+                    }
+                    const gptResponse = await messengerServices.SaveMessageToDB(saveMessage.messagePacket)
+                    socket.emit("pingMessage", gptMessage.messagePacket);
+                    socket.to(data.roomId).emit("pingMessage", gptMessage.messagePacket);
+                }
+            }catch(e){
+
             }
+            
         })
 
         // Handle 'isTyping' event
