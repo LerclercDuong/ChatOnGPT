@@ -505,7 +505,10 @@ body {
     padding: 0;
     text-align: center;
 }
-
+.createConversationButton:hover{
+    cursor: pointer;
+    opacity: 70%;
+}
 .createNewRoomForm input {
     margin: 10px 0;
 }

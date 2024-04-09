@@ -64,7 +64,7 @@ export default function Login(props) {
             dispatch(LoginSuccess(loginData.userData));
             navigate('/')
         } catch (error) {
-            enqueueSnackbar("Wrong username or password", {variant:'error'})
+            enqueueSnackbar("Wrong username or password", {variant:'error', autoHideDuration: 1000})
         }finally {
         }
     };
@@ -108,10 +108,10 @@ export default function Login(props) {
                             id="password"
                             autoComplete="current-password"
                         />
-                        {/*<FormControlLabel*/}
-                        {/*    control={<Checkbox value="remember" color="primary"/>}*/}
-                        {/*    label="Remember me"*/}
-                        {/*/>*/}
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary"/>}
+                            label="Remember me"
+                        />
                         <Button
                             type="submit"
                             fullWidth
@@ -122,9 +122,9 @@ export default function Login(props) {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                {/*<Link href="#" variant="body2">*/}
-                                {/*    Forgot password?*/}
-                                {/*</Link>*/}
+                                <Link href="#" variant="body2">
+                                    Forgot password?
+                                </Link>
                             </Grid>
                             <Grid item>
                                 <Link href="/signup" variant="body2">

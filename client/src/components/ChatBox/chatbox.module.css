@@ -100,7 +100,10 @@ body {
     position: relative;
     width: fit-content;
 }
-
+.chat_box_bar .add_member:hover{
+    opacity: 80%;
+    cursor: pointer;
+}
 .chat_box_bar .add_member_box {
     position: absolute;
     width: 260px;
@@ -659,6 +662,7 @@ body {
 
 .isTypingStatus {
     color: white;
+    margin: 5px;
 }
 
 .createRoomStatus {

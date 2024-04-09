@@ -2,7 +2,6 @@ import {Snackbar} from "@mui/joy";
 import React from "react";
 
 const Notification = ({socket, data}) => {
-    console.log(data)
     const [state, setState] = React.useState({
         open: true,
         vertical: 'bottom',
@@ -29,7 +28,8 @@ const Notification = ({socket, data}) => {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 textAlign: 'left',
-                alignItems: 'start'
+                alignItems: 'start',
+                marginBottom: 15
             }}
         >
             <b>{data.roomName}</b>

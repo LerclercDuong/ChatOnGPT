@@ -6,7 +6,8 @@ export const CreateNewRoom = (data) => {
             return res.data;
         })
         .catch((err) =>{
-
+            console.log(err)
+            throw err.response.data.message
         })
 }
 
@@ -16,7 +17,7 @@ const GetRoomInfo = (roomId) => {
             return res.data;
         })
         .catch((err) =>{
-
+            throw err.response.data
         })
 }
 const GetRoomListOfUser = (userId) => {
@@ -25,7 +26,7 @@ const GetRoomListOfUser = (userId) => {
             return res.data;
         })
         .catch((err) =>{
-
+            throw err.response.data
         })
 }
 
@@ -35,7 +36,7 @@ const GetMessageListInRoom = (roomId) => {
             return res.data;
         })
         .catch((err) =>{
-
+            throw err.response.data
         })
 }
 const SendInvitation = (roomId, from, to) => {
@@ -44,7 +45,7 @@ const SendInvitation = (roomId, from, to) => {
             return res.data;
         })
         .catch((err) =>{
-
+            throw err.response.data
         })
 }
 const GetInvitationList = (userId) => {
@@ -53,7 +54,7 @@ const GetInvitationList = (userId) => {
             return res.data;
         })
         .catch((err) =>{
-
+            throw err.response.data
         })
 }
 const AcceptInvitation = (inviteId) => {

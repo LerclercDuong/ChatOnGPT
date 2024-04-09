@@ -46,7 +46,26 @@ function socketIO(io) {
             }
         }
     }
+    function addTypingUser({username, roomId}) {
+        // Check if the user already exists in the set
+        const userExists = Array.from(typingUsers).some(user => user.username === username);
 
+        // If the user doesn't exist, add them to the set
+        if (!userExists) {
+            typingUsers.add({username, roomId});
+            console.log(`User ${username} added to typing users.`);
+        } else {
+            console.log(`User ${username} is already online.`);
+        }
+    }
+    function removeTypingUser({username, roomId}) {
+        for (const obj of typingUsers) {
+            if (obj.username === username && obj.roomId === roomId) {
+                typingUsers.delete(obj);
+                break; // Exit the loop after the object is deleted
+            }
+        }
+    }
     // Handle 'connection' event when a client connects
     io.on("connection", (socket) => {
         // Handle 'setUsername' event
@@ -139,9 +158,11 @@ function socketIO(io) {
         socket.on("isTyping", (data) => {
             const {username, roomId} = data;
             if (username && roomId) {
-                typingUsers.add(serializeObject(data));
-                const typingUserArray = Array.from(typingUsers).map((jsonString) => JSON.parse(jsonString));
-                socket.to(roomId).emit("pingIsTyping", typingUserArray);
+                addTypingUser({username, roomId})
+                console.log(typingUsers)
+                // typingUsers.add(data);
+                // const typingUserArray = Array.from(typingUsers).map((jsonString) => JSON.parse(jsonString));
+                socket.to(roomId).emit("pingTypingUser", Object.values(Array.from(typingUsers)));
             }
         })
 
@@ -149,9 +170,11 @@ function socketIO(io) {
         socket.on("isNotTyping", (data) => {
             const {username, roomId} = data;
             if (username && roomId) {
-                typingUsers.delete(serializeObject(data));
-                const typingUserArray = Array.from(typingUsers).map((jsonString) => JSON.parse(jsonString));
-                socket.to(roomId).emit("pingIsTyping", typingUserArray);
+                removeTypingUser({username, roomId})
+                console.log(typingUsers)
+                // typingUsers.delete(serializeObject(data);
+                // const typingUserArray = Array.from(typingUsers).map((jsonString) => JSON.parse(jsonString));
+                socket.to(roomId).emit("pingTypingUser", Object.values(Array.from(typingUsers)));
             }
         })
 

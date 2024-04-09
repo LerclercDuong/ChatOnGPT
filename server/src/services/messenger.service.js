@@ -9,8 +9,15 @@ const storeService = require("./store.services");
 
 class MessengerService {
     async CreateNewRoom(creator, roomName){
-        const newRoom = new RoomModel({name: roomName, participants: creator._id })
-        return newRoom.save().catch();
+        try {
+            const newRoom = new RoomModel({ name: roomName, participants: [creator._id] });
+            const savedRoom = await newRoom.save();
+            return savedRoom;
+        } catch (error) {
+            // Handle error if needed
+            console.error("Error creating new room:", error);
+            throw error; // Re-throw the error to be handled by the caller
+        }
     }
 
     async GetRoomInfo(roomId) {

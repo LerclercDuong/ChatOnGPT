@@ -27,7 +27,6 @@ const SideBar = ({socket, chatListOpen, toggleChatList}) => {
     const [modalIsOpen, setIsOpen] = useState(false);
     const [inviteList, setInviteList] = useState([]);
     const [inviteBoxIsOpen, setInviteBoxIsOpen] = useState(false);
-    let subtitle;
 
     function openModal() {
         setIsOpen(true);

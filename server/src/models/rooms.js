@@ -3,7 +3,13 @@ const Schema = mongoose.Schema;
 
 const rooms = new Schema({
     name: {
-        type: String
+        type: String,
+        validate: {
+            validator: function(v) {
+                return v.length >= 5 && v.length <= 20;
+            },
+            message: props => `Please provide a name between 5 and 20 characters.`
+        }
     },
     participants: [
         {
@@ -15,6 +21,14 @@ const rooms = new Schema({
         type: Date,
         default: Date.now
     }
+});
+rooms.pre('save', function(next) {
+        const room = this;
+        // Check if the room name length is between 5 and 20 characters
+        if (room.name.length < 5 || room.name.length > 20) {
+            throw new Error('Room name must be between 5 and 20 characters.');
+        }
+        next()
 });
 rooms.pre('find', async function (docs, next) {
     this.populate({

@@ -30,12 +30,7 @@ const ChatInterface = ({socket, onlineState}) => {
     const [roomName, setRoomName] = useState('');
     const [userFoundName, setUserFoundName] = useState("");
     const [userFoundInfo, setUserFoundInfo] = useState({});
-    const [userFound, setUserFound] = useState("");
-    const [inviteStatus, setInviteStatus] = useState("");
     const [chatListOpen, setChatListOpen] = useState(false);
-    //user notification box (invitations, ...)
-    const [inviteBoxIsOpen, setInviteBoxIsOpen] = useState(false);
-    const [userBoxIsOpen, setUserBoxIsOpen] = useState(false);
     const [inviteList, setInviteList] = useState([]);
     //message and conversation states
     const [addMemberBox, setAddMemberBox] = useState(false);

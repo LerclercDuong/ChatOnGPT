@@ -13,8 +13,8 @@ class Messenger {
             } else {
                 res.status(StatusCodes.NO_CONTENT).json();
             }
-        } catch (e) {
-            res.status(StatusCodes.NO_CONTENT).json();
+        } catch (err) {
+            res.status(500).json({message: err});
         }
 
     }

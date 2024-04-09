@@ -64,10 +64,10 @@ const SignUpPage = () => {
         try {
             const loginData = await SignUp(information?.username, information?.password, information?.repeatPassword);
             if(loginData){
-                enqueueSnackbar('Register success, go to login', {variant: 'success'});
+                enqueueSnackbar('Register success, go to login', {variant: 'success', autoHideDuration: 1000});
             }
         } catch (error) {
-            enqueueSnackbar(error.message, {variant: 'error'})
+            enqueueSnackbar(error.message, {variant: 'error', autoHideDuration: 1000})
         }
     };
 

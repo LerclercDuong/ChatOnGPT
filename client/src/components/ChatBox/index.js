@@ -7,7 +7,7 @@ import useScrollDirection from "../../hooks/useScrollDirection";
 import clsx from "clsx";
 import {useDispatch, useSelector} from "react-redux";
 import {ReceiveMessageAction} from "../../redux/actions/chatAction";
-import {debounce} from "lodash";
+import _, {debounce} from "lodash";
 import Notification from "../Notification";
 import IconButton from "@mui/joy/IconButton";
 import { styled } from "@mui/joy";
@@ -240,29 +240,33 @@ const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
         }
     }, [])
 
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            let data = {
+                username: userInfo.username,
+                roomId: currentRoomInfo._id,
+            };
+            socket.emit("isNotTyping", data);
+        }, 700)
+        let data = {
+            username: userInfo.username,
+            roomId: currentRoomInfo._id,
+        };
+        socket.emit("isTyping", data);
+        return () => clearTimeout(delayDebounceFn)
+    }, [message])
+
+    useEffect(() => {
+        socket.on("pingTypingUser", (data) => {
+            setTypingUser(data)
+        });
+        return () => {
+            socket.off('pingTypingUser');
+        };
+    }, [userInfo])
+
     function handleTypingMessage(e) {
         setMessage(e.target.value)
-        if (typingTimerRef.current) {
-            clearTimeout(typingTimerRef.current);
-        }
-        // Set isTyping to true and start a timer to emit "isTyping" after a delay
-        setIsTyping(true);
-        // Emit "isTyping" after a delay (e.g., 1000ms or 1 second)
-        typingTimerRef.current = setTimeout(() => {
-            if (e.target.value.length > 0) {
-                let data = {
-                    username: userInfo.username, roomId: roomId,
-                };
-                socket.emit("isTyping", data);
-            }
-            if (e.target.value.length === 0) {
-                let data = {
-                    username: userInfo.username, roomId: roomId,
-                };
-                socket.emit("isNotTyping", data);
-            }
-            setIsTyping(false); // User is no longer typing
-        }, 200); // Adjust the delay as needed (e.g., 1000ms = 1 second)
     }
 
     function srcset(image, size, rows = 1, cols = 1) {
@@ -309,7 +313,7 @@ const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
     return (
         <div className={styles.chat_box}>
             {showNotification && <Notification data={ notification } />}
-            <div className={clsx(styles.chat_box_bar, {[styles.fly]: scrollDirection === "up"})}>
+            <div className={clsx(styles.chat_box_bar, {[styles.fly]: scrollDirection === "up" && messageList.length > 10})}>
                 {chatListOpen && (<div className={styles.bar_padding}></div>)}
                 {!chatListOpen && (
                     <button className={styles.navigation_openChatListButton}
@@ -358,16 +362,17 @@ const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
                                 </div>
                             </li>)
                     })}
-                    {typingUser.map(function (data, index) {
-                        if (data.roomId === roomId && data.username !== userInfo.username) {
-                            return (<h4 className={styles.isTypingStatus}>{data.username} is typing...</h4>)
-                        }
-                    })}
+
                     <div/>
+
                 </ul>
                 <div ref={messagesEndRef}></div>
             </div>
-
+            {typingUser.map(function (data, index) {
+                if (data.roomId === currentRoomInfo._id && data.username !== userInfo.username) {
+                    return (<h4 className={styles.isTypingStatus}>{data.username} is typing...</h4>)
+                }
+            })}
             <form className={styles.chat_box_prompt}>
                 {imageDataURL?.length !== 0 && (<div className={styles.image_preview}>
                     {imageDataURL.map(function (url, imageIndex) {
