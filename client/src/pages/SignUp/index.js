@@ -129,10 +129,10 @@ const SignUpPage = () => {
                             id="repeatPassword"
                             autoComplete="current-password"
                         />
-                        {/*<FormControlLabel*/}
-                        {/*    control={<Checkbox value="remember" color="primary"/>}*/}
-                        {/*    label="Remember me"*/}
-                        {/*/>*/}
+                        <FormControlLabel
+                            control={<Checkbox value="remember" color="primary"/>}
+                            label="Remember me"
+                        />
                         <Button
                             type="submit"
                             fullWidth
@@ -151,11 +151,11 @@ const SignUpPage = () => {
                         {/*    Sign In*/}
                         {/*</button>*/}
                         <Grid container>
-                            {/*<Grid item xs>*/}
-                            {/*    <Link href="#" variant="body2">*/}
-                            {/*        Forgot password?*/}
-                            {/*    </Link>*/}
-                            {/*</Grid>*/}
+                            <Grid item xs>
+                                <Link href="#" variant="body2">
+                                    Forgot password?
+                                </Link>
+                            </Grid>
                             <Grid item>
                                 <Link href="/login" variant="body2">
                                     {"Already have an account, login now"}
