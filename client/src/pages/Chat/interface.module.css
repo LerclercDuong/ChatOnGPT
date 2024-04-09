@@ -440,10 +440,10 @@ body {
     background-color: #444654;
 }
 
-.chat_list_navigation button:hover {
-    cursor: pointer;
-    opacity: 0.5;
-}
+/*.chat_list_navigation button:hover {*/
+/*    cursor: pointer;*/
+/*    opacity: 0.5;*/
+/*}*/
 
 .opponent {
     background-color: #444654;

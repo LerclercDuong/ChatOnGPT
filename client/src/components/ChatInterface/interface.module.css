@@ -500,14 +500,14 @@ body {
 .createConversationButton {
     width: 100%;
     height: 40px;
-    background-color: '#00A67E';
+    background-color: #048d6d;
     color: #fff;
     padding: 0;
     text-align: center;
 }
 .createConversationButton:hover{
     cursor: pointer;
-    opacity: 70%;
+    background-color: #078165;
 }
 .createNewRoomForm input {
     margin: 10px 0;

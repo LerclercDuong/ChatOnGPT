@@ -160,7 +160,7 @@ body {
 
 .accept_button:hover{
     cursor: pointer;
-    opacity: 70%;
+    background-color: #087e62;
 }
 .fly {
     top: -50px;
