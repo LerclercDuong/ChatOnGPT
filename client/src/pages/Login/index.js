@@ -19,6 +19,7 @@ import axios from 'axios';
 import {LoginSuccess} from '../../redux/actions/authAction'
 import {useDispatch, useSelector} from "react-redux";
 import {LoginWithUsernameAndPassword} from '../../services/auth.service';
+import {enqueueSnackbar} from "notistack";
 
 function Copyright(props) {
     return (
@@ -63,7 +64,7 @@ export default function Login(props) {
             dispatch(LoginSuccess(loginData.userData));
             navigate('/')
         } catch (error) {
-            // Handle error if needed
+            enqueueSnackbar("Wrong username or password", {variant:'error'})
         }finally {
         }
     };
@@ -107,10 +108,10 @@ export default function Login(props) {
                             id="password"
                             autoComplete="current-password"
                         />
-                        <FormControlLabel
-                            control={<Checkbox value="remember" color="primary"/>}
-                            label="Remember me"
-                        />
+                        {/*<FormControlLabel*/}
+                        {/*    control={<Checkbox value="remember" color="primary"/>}*/}
+                        {/*    label="Remember me"*/}
+                        {/*/>*/}
                         <Button
                             type="submit"
                             fullWidth
@@ -121,12 +122,12 @@ export default function Login(props) {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="#" variant="body2">
-                                    Forgot password?
-                                </Link>
+                                {/*<Link href="#" variant="body2">*/}
+                                {/*    Forgot password?*/}
+                                {/*</Link>*/}
                             </Grid>
                             <Grid item>
-                                <Link href="/SignUp" variant="body2">
+                                <Link href="/signup" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>

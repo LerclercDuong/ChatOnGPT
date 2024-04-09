@@ -1,6 +1,6 @@
 import { api } from '../api/api';
 const UpdateUser = (id, data) => {
-    api.post(`/user/update/${id}`, data)
+    return api.post(`/user/update/${id}`, data)
         .then((res)=>{
             return res.data;
         })
@@ -9,7 +9,7 @@ const UpdateUser = (id, data) => {
         })
 }
 const GetUserById = (id) => {
-    api.get(`/user/get/id/${id}`)
+    return api.get(`/user/get/id/${id}`)
         .then((res)=>{
             return res.data.data;
         })

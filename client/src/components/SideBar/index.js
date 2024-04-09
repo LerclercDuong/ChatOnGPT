@@ -3,16 +3,22 @@ import clsx from "clsx";
 import styles from './list.module.css';
 import {useDispatch, useSelector} from "react-redux";
 import CreateRoomModal from "../../modals/CreateRoomModal";
-import {SetCurrentRoomAction, LoadRoomListAction, LoadChatRoomAction} from "../../redux/actions/chatAction";
+import {
+    SetCurrentRoomAction,
+    LoadRoomListAction,
+    LoadChatRoomAction,
+    LoadInvitationListAction
+} from "../../redux/actions/chatAction";
 import {
     AcceptInvitation,
     GetRoomListOfUser,
     GetInvitationById,
     GetRoomInfo,
-    GetMessageListInRoom
+    GetMessageListInRoom, GetInvitationList
 } from "../../services/chat.service";
-
+import {useRef} from "react"
 const SideBar = ({socket, chatListOpen, toggleChatList}) => {
+    const catMenu = useRef(null)
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.auth.user);
     const roomList = useSelector((state) => state.chat.roomList);
@@ -28,13 +34,12 @@ const SideBar = ({socket, chatListOpen, toggleChatList}) => {
 
     }
 
-    function afterOpenModal() {
-        subtitle.style.color = '#00A67E';
+    const closeOpenMenus = (e)=>{
+        if(inviteBoxIsOpen && !catMenu.current?.contains(e.target)){
+            setInviteBoxIsOpen(false)
+        }
     }
-
-    function handleConversation(room) {
-
-    }
+    document.addEventListener('mousedown',closeOpenMenus)
 
     async function handleAcceptInvitation(inviteId) {
         try{
@@ -43,9 +48,11 @@ const SideBar = ({socket, chatListOpen, toggleChatList}) => {
                 const roomInfo = await GetRoomInfo(response.roomId._id)
                 const messageList = await GetMessageListInRoom(response.roomId._id);
                 const roomList = await GetRoomListOfUser(userInfo._id);
+                const invitationList = await GetInvitationList(userInfo._id);
                 dispatch(LoadRoomListAction({roomList}));
                 dispatch(SetCurrentRoomAction({roomId: response.roomId._id}));
                 dispatch(LoadChatRoomAction({roomInfo, messageList}));
+                dispatch(LoadInvitationListAction({invitationList}));
             }
         }catch (e) {
 
@@ -115,7 +122,7 @@ const SideBar = ({socket, chatListOpen, toggleChatList}) => {
                     </div>
                 </div>
 
-                <div className={styles.user_navigation}
+                <div ref={catMenu} className={styles.user_navigation}
                      onClick={() => {
                          setInviteBoxIsOpen(!inviteBoxIsOpen);
                      }}
@@ -136,7 +143,7 @@ const SideBar = ({socket, chatListOpen, toggleChatList}) => {
                                                  {/*<img src={invite.from.profilePicture}/>*/}
                                                  <p>{invite.from.username}</p>
                                              </span>
-                                            <button type={"submit"}>
+                                            <button type={"submit"} className={styles.accept_button}>
                                                 <ion-icon name="person-add-outline"></ion-icon>
                                             </button>
 

@@ -44,11 +44,13 @@ export default function MyProfile() {
             profilePicture: data.get('profilePicture'),
         }
         try {
-            await UpdateUser(userInfo._id, data);
-            // console.log(userUpdated)
+            const result = await UpdateUser(userInfo._id, data);
+            if(result){
+                enqueueSnackbar('Update successfully', {variant: 'success', autoHideDuration: 1000})
+            }
 
         } catch (error) {
-            // Handle error if needed
+            enqueueSnackbar('Update fail', {variant: 'error'})
         }
     };
     const { enqueueSnackbar } = useSnackbar();
@@ -57,7 +59,7 @@ export default function MyProfile() {
 
     return (
         <div>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} >
                 <Grid item xs={12} md={4}>
                     {selectedImage && (
                         <Avatar
@@ -73,16 +75,16 @@ export default function MyProfile() {
                         sx={{width: 240, height: 240}}
                     />)}
                 </Grid>
-                <Grid item xs={12} md={8}>
+                <Grid item xs={12} md={4}>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label="Username"
                             name="email"
-                            autoComplete="email"
+                            value={userInfo.username}
                             autoFocus
                         />
                         <input

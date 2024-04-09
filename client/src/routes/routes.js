@@ -1,7 +1,7 @@
 import Chat from "../pages/Chat";
 import UserSetting from "../pages/Profile";
 import Login from "../pages/Login";
-import SignUp from "../components/SignUp";
+import SignUp from "../pages/SignUp";
 import Introduction from "../pages/Introduction";
 const privateRoutes = [
     {

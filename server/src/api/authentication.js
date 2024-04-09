@@ -17,21 +17,18 @@ class Authentication {
                 throw new ApiError(401, 'Repeat password is wrong');
             }
         } catch (err) {
-            res.status(err.statusCode).json({message: err.message})
+            res.status(403).json({message: err.message})
         }
     }
 
     async Login(req, res, next) {
         const {username, password} = req.body;
         try {
-
             const userData = await authService.LoginWithUsernameAndPassword(username, password);
-            console.log(userData)
             if (userData) {
                 const tokens = await authService.GenerateAuthToken(userData);
                 res.status(StatusCodes.OK).json({userData, tokens});
             }
-
         } catch (err) {
             res.status(StatusCodes.UNAUTHORIZED).json({message: err.message});
         }

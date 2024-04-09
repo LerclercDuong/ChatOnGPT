@@ -20,7 +20,7 @@ class AuthService {
                 role: 'user',
             }
             const newUser = new UserModel({...userData});
-            return newUser.save();
+            return newUser.save().catch();
         }catch(e){
             throw new ApiError(500, e.message)
         }

@@ -158,7 +158,10 @@ body {
     background-color: #202123;
 }
 
-
+.accept_button:hover{
+    cursor: pointer;
+    opacity: 70%;
+}
 .fly {
     top: -50px;
 }

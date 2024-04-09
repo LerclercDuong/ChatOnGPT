@@ -131,7 +131,7 @@ function InviteTab({socket}) {
 
     useEffect(() => {
         socket.on('invitationSuccess', (data) => {
-            enqueueSnackbar(data.message, {variant: 'success'})
+            enqueueSnackbar(data.message, {variant: 'success', autoHideDuration: 1000})
         })
         return () => {
             socket.off('invitationSuccess')
@@ -139,7 +139,7 @@ function InviteTab({socket}) {
     }, [])
     useEffect(() => {
         socket.on('invitationFailed', (data) => {
-            enqueueSnackbar(data.message, {variant: 'error'})
+            enqueueSnackbar(data.message, {variant: 'error', autoHideDuration: 1000})
         })
         return () => {
             socket.off('invitationFailed')
@@ -243,7 +243,7 @@ function SettingTab() {
         RemoveRefreshToken()
         RemoveAccessToken()
         dispatch(LogoutAction())
-        navigate('/introduction')
+        // navigate('/introduction')
     }
 
     return (

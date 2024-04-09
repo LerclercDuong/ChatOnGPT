@@ -25,6 +25,7 @@ const VisuallyHiddenInput = styled('input')`
   width: 1px;
 `;
 const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
+    const catMenu = useRef(null)
     const inputRef = useRef();
     const userInfo = useSelector((state) => state.auth.user);
     const currentRoomInfo = useSelector((state) => state.chat.roomInfo);
@@ -42,6 +43,13 @@ const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
     const [message, setMessage] = useState('');
     const [imageDataURL, setImageDataURL] = useState([]);
     const [emojiPicker, setEmojiPicker] = useState(false);
+
+    const closeOpenMenus = (e)=>{
+        if(emojiPicker && !catMenu.current?.contains(e.target)){
+            setEmojiPicker(false)
+        }
+    }
+    document.addEventListener('mousedown',closeOpenMenus)
 
     const debouncedOnPaste = debounce((event) => {
         let imageAdded = false; // Flag to track if an image has been added
@@ -393,7 +401,7 @@ const ChatBox = ({socket, onlineState, toggleChatList, chatListOpen}) => {
                         </textarea>
                 <div className={styles.prompt_feature_area}>
 
-                    <div className={styles.prompt_emoji}>
+                    <div ref={catMenu} className={styles.prompt_emoji}>
                         {emojiPicker && <EmojiPicker
                             className={styles.emojiPicker}
                             onEmojiClick={(emoji, event) => {

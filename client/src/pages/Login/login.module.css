@@ -30,7 +30,7 @@ button{
     border-radius:5px;
 }
 
-button:hover{
-    cursor: pointer;
-    opacity: 70%;
-}
+/*button:hover{*/
+/*    cursor: pointer;*/
+/*    opacity: 70%;*/
+/*}*/

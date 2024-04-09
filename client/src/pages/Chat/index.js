@@ -25,7 +25,7 @@ import io from "socket.io-client";
 import {useSnackbar} from "notistack";
 import {useNavigate} from "react-router-dom";
 
-const socket = io('https://chatongpt-c29w.onrender.com/');
+const socket = io('http://localhost:8080/');
 const ChatInterface = () => {
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.auth.user);
@@ -91,7 +91,7 @@ const ChatInterface = () => {
     useEffect(() => {
         socket.on('receive-invitation', (data) => {
             console.log(data)
-            enqueueSnackbar('New Invitation from' + data.from.username, {action})
+            enqueueSnackbar('New Invitation from ' + data.from.username, {action})
             dispatch(ReceiveInvitationAction(data))
         })
         return () => {
